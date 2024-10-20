@@ -1,0 +1,2 @@
+# PizzaManager
+System zarządzania pizzerią
