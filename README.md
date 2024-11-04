@@ -1,28 +1,17 @@
-#### System zarządzania pizzerią
-
-* administrator pizzerii może zarządzać danymi pizzerii (nazwa, adres itp.)
-* administrator pizzerii może zarządzać pracownikami
-* pracownik pizzerii może zarządzać stanem magazynowym
-  * np. może wpisać, że na stanie posiada 10kg sera mozzarella
-* pracownik pizzerii może układać menu złożone z różnych pizz składających się z uprzednio zdefiniowanych składników
-  * np. "pizza inferno" może składać się z sosu pomidorowego, sera mozzarelli, sera gorgonzoli, salami picante, nduji i cebuli
-* pracownik otrzymuje powiadomienia, gdy stan danego produktu zbliża się do zera
-* klient przychodzący do pizzerii może na stronie internetowej obejrzeć dostępne menu i zamówić dowolną liczbę pizz
-  * widzi tylko te, które są aktualnie możliwe do zrobienia przez kucharza ze względu na stany magazynowe
-  * każde zamówienie zmniejsza stan magazynowy produktów potrzebnych do wyprodukowania pizzy
-  * może zamówić pizzę z własnymi składnikami, ale także modyfikować zaproponowane przez pizzerię pozycje (np. "pizza inferno, ale bez cebuli")
-* administrator widzi dzienne, tygodniowe i miesięczne zużycie danych produktów oraz liczbę zamówień konkretnych pozycji z menu
-* administrator widzi logi z aplikacji
+#### Porównywarka cen paliw
 
 Projekt musi spełniać następujące wymagania funkcjonalne:
-* system powinien mieć części przeznaczone dla klienta i dla zalogowanych pracownika i administratora
-* powiadomienia o brakach magazynowych powinny być wysyłane zbiorczo raz dziennie
-* wszystkie akcje powinny być logowane w systemie i widoczne dla administratora; każda akcja musi mieć informację "kto", "co" i "kiedy", np.:
-  * klient zamówił pozycję z menu `5092f1b7-d392-479d-8709-a8b1b30d37c6` w dniu `2024-10-14 16:23:03`
-  * pracownik `13079bb3-ff52-48a6-b3f3-b440be13e9ee` usunął pozycję z menu `5092f1b7-d392-479d-8709-a8b1b30d37c6` w dniu `2024-10-14 17:14:32`
+* użytkownik może zarejestrować się w systemie
+* użytkownik może przeglądać mapę i listę stacji paliwowych z filtrami na markę, rodzaj dostępnego paliwa, datę ostatniej aktualizacji cen oraz ceny
+* użytkownik może zaproponować własne ceny poprzez specjalny formularz z polami liczbowymi oraz zdjęciem potwierdzającym dane
+* administrator może zarządzać użytkownikami: widzi ich dane, może ich blokować
+* administrator może zarządzać markami stacji
+* administrator może zarządzać stacjami paliwowymi i ich cenami
+  * każda stacja musi być przypisana do marki, mieć adres oraz koordynaty
+* administrator może zarządzać propozycjami od użytkowników i nagradzać ich "punktami", jeżeli zaakceptuje ich dane
+  * powinien też widzieć listę i statystyki dotyczące przyjętych i odrzuconych propozycji
 
+Projekt musi spełniać następujące wymagania funkcjonalne:
 * rejestracja powinna odbywać się klasycznie poprzez mejla oraz Facebooka
-* identyfikator podsystemu musi wyświetlać się w URL-u: w subdomenie (np. https://rewak.cms.localhost/) lub routingu (np. https://cms.localhost/rewak/)
-* zaproszenia użytkowników powinny odbywać się poprzez link zaproszeniem, który:
-  * aktywowany przez zalogowanego użytkownika, wyświetli formularz potwierdzający akceptację zaproszenia
-  * aktywowany przez gościa, wyświetli formularze rejestracji i logowania, ale po pierwszym zalogowaniu wyświetli formularz potwierdzający akceptację zaproszenia
+* backend i frontend powinny być odseparowane i komunikacja powinna iść poprzez REST API
+* backend musi być udokumentowany w formie OpenAPI
