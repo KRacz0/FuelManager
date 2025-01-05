@@ -7,9 +7,22 @@ const http = axios.create({
   timeout: 5000,
   headers: {
     'Content-Type': 'application/json',
-    Authorization: 'Bearer YOUR_TOKEN',
   },
 })
+
+http.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token') // Pobierz token z localStorage
+    console.log(token)
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}` // Dodaj token do nagłówka
+    }
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  },
+)
 
 http.interceptors.response.use(
   (response) => {
