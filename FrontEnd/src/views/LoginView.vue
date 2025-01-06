@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import http from '@/http'
+import router from '@/router'
+import { useUserStore } from '@/stores/userStore'
 import { ref } from 'vue'
 import { useToast } from 'vue-toast-notification'
 
@@ -7,12 +9,7 @@ const email = ref('')
 const password = ref('')
 const errorMessage = ref('')
 
-function decodeJwt(token: string) {
-  const base64Url = token.split('.')[1] // Wyciągamy część payload (druga część)
-  const base64 = base64Url.replace('-', '+').replace('_', '/')
-  const jsonPayload = atob(base64) // Dekodowanie Base64
-  return JSON.parse(jsonPayload) // Przekształcamy w obiekt JSON
-}
+const userStore = useUserStore()
 
 function login() {
   validate()
@@ -21,26 +18,22 @@ function login() {
   }
   const request = { email: email.value, password: password.value }
   http.post('api/login', request).then((response) => {
-    localStorage.setItem('token', response.data.token)
-    if (response.data.token) {
-      const decodedData = decodeJwt(response.data.token) // Dekodowanie tokenu
-      const email = decodedData.email
-      const role = decodedData.role
-      useToast().default(`Zalogowano jako ${email} z rolą ${role}`)
-    }
+    userStore.setUser(response.data.token)
+    useToast().default(`Zalogowano`)
+    router.push({ name: 'home' })
   })
 }
 
-function testAdmin() {
-  http
-    .get('/api/admin')
-    .then((response) => {
-      console.log(response)
-    })
-    .catch((error) => {
-      console.log(error)
-    })
-}
+// function testAdmin() {
+//   http
+//     .get('/api/admin')
+//     .then((response) => {
+//       console.log(response)
+//     })
+//     .catch((error) => {
+//       console.log(error)
+//     })
+// }
 
 function validate() {
   errorMessage.value = ''
@@ -57,12 +50,47 @@ function validate() {
 </script>
 
 <template>
-  <div>Login</div>
-  <div class="text-red-600">{{ errorMessage }}</div>
-  <form @submit.prevent="login">
-    <div><input type="email" v-model="email" placeholder="Wpisz email" /></div>
-    <div><input type="password" v-model="password" placeholder="Wpisz hasło" /></div>
-    <div><button type="submit">Zaloguj się</button></div>
-  </form>
-  <div><button @click="testAdmin">Admin Test</button></div>
+  <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg">
+    <h2 class="text-2xl font-semibold text-center text-primary mb-6">Zaloguj się</h2>
+
+    <div v-if="errorMessage" class="text-red-600 text-center mb-4">{{ errorMessage }}</div>
+
+    <form @submit.prevent="login">
+      <div class="mb-4">
+        <input
+          type="email"
+          v-model="email"
+          placeholder="Wpisz email"
+          class="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+        />
+      </div>
+
+      <div class="mb-6">
+        <input
+          type="password"
+          v-model="password"
+          placeholder="Wpisz hasło"
+          class="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+        />
+      </div>
+
+      <div class="mb-4 text-center">
+        <button
+          type="submit"
+          class="w-full py-3 bg-primary hover:bg-green-600 text-white font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+        >
+          Zaloguj się
+        </button>
+      </div>
+    </form>
+    <div class="w-full text-gray-400 text-sm text-center">
+      Nie masz konta? <RouterLink to="/register" class="text-primary">Zarejestruj się</RouterLink>
+    </div>
+  </div>
+
+  <!-- <div class="text-center mt-4">
+      <button @click="testAdmin" class="text-primary hover:text-green-600 font-semibold">
+        Test Admin
+      </button>
+    </div> -->
 </template>

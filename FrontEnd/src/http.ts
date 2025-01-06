@@ -13,7 +13,6 @@ const http = axios.create({
 http.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token') // Pobierz token z localStorage
-    console.log(token)
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}` // Dodaj token do nagłówka
     }
