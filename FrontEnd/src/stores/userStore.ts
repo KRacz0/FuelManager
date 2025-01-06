@@ -4,7 +4,6 @@ function decodeJwt(token: string) {
   const base64Url = token.split('.')[1] // Wyciągamy część payload (druga część)
   const base64 = base64Url.replace('-', '+').replace('_', '/')
   const jsonPayload = atob(base64) // Dekodowanie Base64
-  console.log(jsonPayload)
   return JSON.parse(jsonPayload) // Przekształcamy w obiekt JSON
 }
 
@@ -48,6 +47,20 @@ export const useUserStore = defineStore('user', {
     clearUser() {
       this.$state = emptyUser()
       localStorage.removeItem('token')
+    },
+  },
+  getters: {
+    isLoggedIn() {
+      if (this.email == '') {
+        return false
+      }
+      return true
+    },
+    isAdmin() {
+      if (this.role != 'admin') {
+        return false
+      }
+      return true
     },
   },
 })

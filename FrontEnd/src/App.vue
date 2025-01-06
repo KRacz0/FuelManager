@@ -7,10 +7,11 @@ import AppNavbar from './components/AppNavbar.vue'
 <template>
   <AppNavbar />
   <div>
-    <RouterLink to="/">Welcome</RouterLink>
-    <RouterLink to="/home">Home</RouterLink>
-    <RouterLink to="/register">Register</RouterLink>
-    <RouterLink to="/login">Login</RouterLink>
+    <RouterLink to="/">Welcome </RouterLink>
+    <RouterLink to="/home">Home </RouterLink>
+    <RouterLink to="/register">Register </RouterLink>
+    <RouterLink to="/login">Login </RouterLink>
+    <RouterLink to="/admin">Admin </RouterLink>
   </div>
   <RouterView />
 </template>
