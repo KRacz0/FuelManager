@@ -1,13 +1,353 @@
+<<<<<<< Updated upstream
 <!DOCTYPE html>
-<html lang="">
-  <head>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
-    <link rel="icon" href="/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vite App</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
-  </body>
+    <title>Logowanie i Rejestracja</title>
+</head>
+<body>
+    <h1>Ceny Paliw</h1>
+
+    <h2>Rejestracja</h2>
+    <form id="register-form">
+        <input type="email" id="register-email" placeholder="Email" required>
+        <input type="password" id="register-password" placeholder="Hasło" required>
+        <button type="submit">Zarejestruj się</button>
+    </form>
+
+    <h2>Logowanie</h2>
+    <form id="login-form">
+        <input type="email" id="login-email" placeholder="Email" required>
+        <input type="password" id="login-password" placeholder="Hasło" required>
+        <button type="submit">Zaloguj się</button>
+    </form>
+
+    <button onclick="window.location.href='/auth/facebook'">Zaloguj się przez Facebook</button>
+
+    <script>
+        const backendUrl = '/api';
+
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+
+            try {
+                const response = await fetch(`${backendUrl}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password }),
+                });
+                const data = await response.json();
+                alert(data.message || 'Rejestracja zakończona sukcesem!');
+            } catch (err) {
+                console.error(err);
+                alert('Wystąpił błąd podczas rejestracji.');
+            }
+        });
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            try {
+                const response = await fetch(`${backendUrl}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password }),
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    localStorage.setItem('token', data.token);
+                    alert('Zalogowano pomyślnie!');
+                } else {
+                    alert(data.message || 'Nieprawidłowy email lub hasło.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Wystąpił błąd podczas logowania.');
+            }
+        });
+    </script>
+
+    <h2>Panel Administratora</h2>
+    <button id="admin-panel">Sprawdź dostęp</button>
+
+    <script>
+        document.getElementById('admin-panel').addEventListener('click', async () => {
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                alert('Nie jesteś zalogowany!');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/admin', {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ error: 'Nieznany błąd serwera.' }));
+                    throw new Error(errorData.error || 'Brak dostępu.');
+                }
+
+                const data = await response.json();
+                alert(data.message); 
+                window.location.href = '/admin-panel.html';
+            } catch (err) {
+                console.error('Błąd podczas sprawdzania dostępu:', err.message);
+                alert(err.message || 'Wystąpił błąd podczas sprawdzania dostępu.');
+            }
+        });
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+
+        if (token) {
+            localStorage.setItem('token', token);
+
+            window.history.replaceState({}, document.title, '/');
+
+            alert('Zalogowano pomyślnie przez Facebook!');
+        }
+    </script>
+
+<h2>Lista stacji benzynowych</h2>
+<div id="station-list"></div>
+<script>
+    async function fetchStations() {
+        try {
+            const response = await fetch('/api/stations');
+            const stations = await response.json();
+            renderStations(stations);
+        } catch (error) {
+            console.error('Błąd podczas pobierania danych o stacjach:', error.message);
+            alert('Nie udało się załadować stacji.');
+        }
+    }
+
+    function renderStations(stations) {
+        const stationList = document.getElementById('station-list');
+        stationList.innerHTML = ''; // Wyczyść listę przed dodaniem nowych elementów
+
+        stations.forEach(station => {
+            const stationElement = document.createElement('div');
+            stationElement.classList.add('station-item');
+            stationElement.innerHTML = `
+                <h3>Stacja ${station.name}</h3>
+                <p><strong>Marka:</strong> ${station.brand}</p>
+                <p><strong>Adres:</strong> ${station.address}</p>
+                <p><strong>Współrzędne:</strong> ${station.latitude}, ${station.longitude}</p>
+                <p><strong>Paliwa:</strong> ${[
+                    station.fuel_diesel ? 'Diesel' : '',
+                    station.fuel_gasoline ? 'Benzyna' : '',
+                    station.fuel_lpg ? 'LPG' : ''
+                ].filter(Boolean).join(' ')}</p>
+                <p><strong>Ostatnia aktualizacja:</strong> ${new Date(station.last_updated).toLocaleString()}</p>
+            `;
+            stationList.appendChild(stationElement);
+        });
+    }
+
+    fetchStations();
+</script>
+
+<style>
+    #station-list {
+        margin-top: 20px;
+    }
+    .station-item {
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+        margin-bottom: 10px;
+        background-color: #f9f9f9;
+    }
+    .error {
+        color: red;
+        font-weight: bold;
+    }
+</style>
+
+</body>
 </html>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logowanie i Rejestracja</title>
+</head>
+<body>
+    <h1>Ceny Paliw</h1>
+
+    <h2>Rejestracja</h2>
+    <form id="register-form">
+        <input type="email" id="register-email" placeholder="Email" required>
+        <input type="password" id="register-password" placeholder="Hasło" required>
+        <button type="submit">Zarejestruj się</button>
+    </form>
+
+    <h2>Logowanie</h2>
+    <form id="login-form">
+        <input type="email" id="login-email" placeholder="Email" required>
+        <input type="password" id="login-password" placeholder="Hasło" required>
+        <button type="submit">Zaloguj się</button>
+    </form>
+
+    <button onclick="window.location.href='/auth/facebook'">Zaloguj się przez Facebook</button>
+
+    <script>
+        const backendUrl = '/api';
+
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+
+            try {
+                const response = await fetch(`${backendUrl}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password }),
+                });
+                const data = await response.json();
+                alert(data.message || 'Rejestracja zakończona sukcesem!');
+            } catch (err) {
+                console.error(err);
+                alert('Wystąpił błąd podczas rejestracji.');
+            }
+        });
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            try {
+                const response = await fetch(`${backendUrl}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password }),
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    localStorage.setItem('token', data.token);
+                    alert('Zalogowano pomyślnie!');
+                } else {
+                    alert(data.message || 'Nieprawidłowy email lub hasło.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Wystąpił błąd podczas logowania.');
+            }
+        });
+    </script>
+
+    <h2>Panel Administratora</h2>
+    <button id="admin-panel">Sprawdź dostęp</button>
+
+    <script>
+        document.getElementById('admin-panel').addEventListener('click', async () => {
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                alert('Nie jesteś zalogowany!');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/admin', {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ error: 'Nieznany błąd serwera.' }));
+                    throw new Error(errorData.error || 'Brak dostępu.');
+                }
+
+                const data = await response.json();
+                alert(data.message); 
+                window.location.href = '/admin-panel.html';
+            } catch (err) {
+                console.error('Błąd podczas sprawdzania dostępu:', err.message);
+                alert(err.message || 'Wystąpił błąd podczas sprawdzania dostępu.');
+            }
+        });
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+
+        if (token) {
+            localStorage.setItem('token', token);
+
+            window.history.replaceState({}, document.title, '/');
+
+            alert('Zalogowano pomyślnie przez Facebook!');
+        }
+    </script>
+
+<h2>Lista stacji benzynowych</h2>
+<div id="station-list"></div>
+<script>
+    async function fetchStations() {
+        try {
+            const response = await fetch('/api/stations');
+            const stations = await response.json();
+            renderStations(stations);
+        } catch (error) {
+            console.error('Błąd podczas pobierania danych o stacjach:', error.message);
+            alert('Nie udało się załadować stacji.');
+        }
+    }
+
+    function renderStations(stations) {
+        const stationList = document.getElementById('station-list');
+        stationList.innerHTML = ''; // Wyczyść listę przed dodaniem nowych elementów
+
+        stations.forEach(station => {
+            const stationElement = document.createElement('div');
+            stationElement.classList.add('station-item');
+            stationElement.innerHTML = `
+                <h3>Stacja ${station.name}</h3>
+                <p><strong>Marka:</strong> ${station.brand}</p>
+                <p><strong>Adres:</strong> ${station.address}</p>
+                <p><strong>Współrzędne:</strong> ${station.latitude}, ${station.longitude}</p>
+                <p><strong>Paliwa:</strong> ${[
+                    station.fuel_diesel ? 'Diesel' : '',
+                    station.fuel_gasoline ? 'Benzyna' : '',
+                    station.fuel_lpg ? 'LPG' : ''
+                ].filter(Boolean).join(' ')}</p>
+                <p><strong>Ostatnia aktualizacja:</strong> ${new Date(station.last_updated).toLocaleString()}</p>
+            `;
+            stationList.appendChild(stationElement);
+        });
+    }
+
+    fetchStations();
+</script>
+
+<style>
+    #station-list {
+        margin-top: 20px;
+    }
+    .station-item {
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+        margin-bottom: 10px;
+        background-color: #f9f9f9;
+    }
+    .error {
+        color: red;
+        font-weight: bold;
+    }
+</style>
+
+</body>
+</html>
+>>>>>>> Stashed changes
