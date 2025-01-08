@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import FacebookLogin from '@/components/FacebookLogin.vue'
 import http from '@/http'
 import router from '@/router'
 import { useUserStore } from '@/stores/userStore'
@@ -77,13 +78,14 @@ function validate() {
       <div class="mb-4 text-center">
         <button
           type="submit"
-          class="w-full py-3 bg-primary hover:bg-green-600 text-white font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+          class="w-full py-2 bg-primary hover:bg-green-600 text-white font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
         >
           Zaloguj się
         </button>
       </div>
     </form>
-    <div class="w-full text-gray-400 text-sm text-center">
+    <FacebookLogin />
+    <div class="w-full text-gray-400 text-sm text-center mt-2">
       Nie masz konta? <RouterLink to="/register" class="text-primary">Zarejestruj się</RouterLink>
     </div>
   </div>

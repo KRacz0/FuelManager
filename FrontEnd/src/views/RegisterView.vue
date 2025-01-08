@@ -2,6 +2,7 @@
 import http from '@/http'
 import router from '@/router'
 import { ref } from 'vue'
+import FacebookLogin from '@/components/FacebookLogin.vue'
 
 const email = ref('')
 const password = ref('')
@@ -60,12 +61,13 @@ function validate() {
       <div class="mb-4 text-center">
         <button
           type="submit"
-          class="w-full py-3 bg-primary hover:bg-green-600 text-white font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+          class="w-full py-2 bg-primary hover:bg-green-600 text-white font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
         >
           Zarejestruj się
         </button>
       </div>
-      <div class="w-full text-gray-400 text-sm text-center">
+      <FacebookLogin />
+      <div class="w-full text-gray-400 text-sm text-center mt-2">
         Masz już konto? <RouterLink to="/login" class="text-primary">Zaloguj się</RouterLink>
       </div>
     </form>
