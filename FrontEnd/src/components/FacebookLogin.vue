@@ -1,11 +1,8 @@
 <script setup lang="ts">
-function loginWithFacebook() {
-  const appId = import.meta.env.VITE_FACEBOOK_APP_ID // Podaj App ID z Facebook Developers
-  const redirectUri = encodeURIComponent(import.meta.env.VITE_FACEBOOK_CALLBACK_URL) // URL przekierowania po logowaniu
-  const fbLoginUrl = `https://www.facebook.com/v16.0/dialog/oauth?client_id=${appId}&redirect_uri=${redirectUri}&scope=email,public_profile`
+import http from '@/http'
 
-  // Przekieruj użytkownika na stronę logowania Facebooka
-  window.location.href = fbLoginUrl
+async function loginWithFacebook() {
+  window.location.href = import.meta.env.VITE_API_URL + '/auth/facebook'
 }
 </script>
 

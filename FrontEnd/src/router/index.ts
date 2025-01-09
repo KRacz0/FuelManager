@@ -7,7 +7,6 @@ import LoginView from '@/views/LoginView.vue'
 import AdminView from '@/views/AdminView.vue'
 import WelcomeView from '@/views/WelcomeView.vue'
 import AccessDeniedView from '@/views/AccessDeniedView.vue'
-import FacebookCallback from '@/components/FacebookCallback.vue'
 import MapView from '@/views/MapView.vue'
 import ListView from '@/views/ListView.vue'
 import UpdateStationView from '@/views/UpdateStationView.vue'
@@ -55,12 +54,6 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: LoginView,
-      meta: { requiresAuth: false, guestOnly: true },
-    },
-    {
-      path: '/facebook-callback',
-      name: 'facebook-callback',
-      component: FacebookCallback,
       meta: { requiresAuth: false, guestOnly: true },
     },
     {

@@ -1,4 +1,29 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import router from '@/router'
+import { useUserStore } from '@/stores/userStore'
+import { onMounted } from 'vue'
+import { useToast } from 'vue-toast-notification'
+
+const userStore = useUserStore()
+
+onMounted(() => {
+  const urlParams = new URLSearchParams(window.location.search)
+  const token = urlParams.get('token')
+  console.log(urlParams)
+  console.log(token)
+
+  if (token) {
+    try {
+      userStore.setUser(token)
+      useToast().default(`Zalogowano`)
+      router.push({ name: 'home' })
+    } catch {
+      useToast().default(`Błąd logowania`)
+      router.push({ name: 'login' })
+    }
+  }
+})
+</script>
 
 <template>
   <div class="flex flex-col items-center bg-gray-100">
