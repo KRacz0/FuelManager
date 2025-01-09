@@ -11,7 +11,9 @@ function logout() {
 </script>
 
 <template>
-  <nav class="mb-5 flex justify-between items-center p-2 bg-gray-800 text-white position-fixed">
+  <nav
+    class="fixed top-0 left-0 right-0 mb-5 flex justify-between items-center p-2 bg-gray-800 text-white position-fixed"
+  >
     <!-- Logo po lewej -->
     <div class="flex-1">
       <img src="@/assets/ceny_paliwek_logo.png" alt="Logo" class="w-10 h-auto" />

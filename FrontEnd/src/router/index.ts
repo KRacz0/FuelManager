@@ -8,6 +8,9 @@ import AdminView from '@/views/AdminView.vue'
 import WelcomeView from '@/views/WelcomeView.vue'
 import AccessDeniedView from '@/views/AccessDeniedView.vue'
 import FacebookCallback from '@/components/FacebookCallback.vue'
+import MapView from '@/views/MapView.vue'
+import ListView from '@/views/ListView.vue'
+import UpdateStationView from '@/views/UpdateStationView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -22,6 +25,24 @@ const router = createRouter({
       path: '/home',
       name: 'home',
       component: HomeView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/map',
+      name: 'map',
+      component: MapView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/list',
+      name: 'list',
+      component: ListView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/update-station',
+      name: 'update-station',
+      component: UpdateStationView,
       meta: { requiresAuth: true },
     },
     {

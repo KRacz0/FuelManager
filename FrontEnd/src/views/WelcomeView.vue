@@ -1,7 +1,7 @@
 <script setup lang="ts"></script>
 
 <template>
-  <div class="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+  <div class="flex flex-col items-center bg-gray-100">
     <!-- Logo -->
     <div class="mb-8">
       <img src="@/assets/ceny_paliwek_logo.png" alt="Logo strony" class="w-40" />

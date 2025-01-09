@@ -25,17 +25,6 @@ function login() {
   })
 }
 
-// function testAdmin() {
-//   http
-//     .get('/api/admin')
-//     .then((response) => {
-//       console.log(response)
-//     })
-//     .catch((error) => {
-//       console.log(error)
-//     })
-// }
-
 function validate() {
   errorMessage.value = ''
   if (email.value == '') {
@@ -51,7 +40,7 @@ function validate() {
 </script>
 
 <template>
-  <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg">
+  <div class="flex-none max-w-md mx-auto bg-white p-10 rounded-lg shadow-lg">
     <h2 class="text-2xl font-semibold text-center text-primary mb-6">Zaloguj się</h2>
 
     <div v-if="errorMessage" class="text-red-600 text-center mb-4">{{ errorMessage }}</div>
