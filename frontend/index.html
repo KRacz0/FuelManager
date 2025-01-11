@@ -129,27 +129,28 @@
     }
 
     function renderStations(stations) {
-        const stationList = document.getElementById('station-list');
-        stationList.innerHTML = ''; // Wyczyść listę przed dodaniem nowych elementów
+    const stationList = document.getElementById('station-list');
+    stationList.innerHTML = ''; 
 
-        stations.forEach(station => {
-            const stationElement = document.createElement('div');
-            stationElement.classList.add('station-item');
-            stationElement.innerHTML = `
-                <h3>Stacja ${station.name}</h3>
-                <p><strong>Marka:</strong> ${station.brand}</p>
-                <p><strong>Adres:</strong> ${station.address}</p>
-                <p><strong>Współrzędne:</strong> ${station.latitude}, ${station.longitude}</p>
-                <p><strong>Paliwa:</strong> ${[
-                    station.fuel_diesel ? 'Diesel' : '',
-                    station.fuel_gasoline ? 'Benzyna' : '',
-                    station.fuel_lpg ? 'LPG' : ''
-                ].filter(Boolean).join(' ')}</p>
-                <p><strong>Ostatnia aktualizacja:</strong> ${new Date(station.last_updated).toLocaleString()}</p>
-            `;
-            stationList.appendChild(stationElement);
-        });
-    }
+    stations.forEach(station => {
+        const stationElement = document.createElement('div');
+        stationElement.classList.add('station-item');
+        stationElement.innerHTML = `
+            <h3>Stacja ${station.name}</h3>
+            <p><strong>Marka:</strong> ${station.brand}</p>
+            <p><strong>Adres:</strong> ${station.address}</p>
+            <p><strong>Współrzędne:</strong> ${station.latitude}, ${station.longitude}</p>
+            <p><strong>Ceny paliw:</strong> 
+                ${station.fuel_diesel ? `Diesel: ${station.fuel_diesel} zł ` : 'Brak '}
+                ${station.fuel_gasoline ? `Benzyna: ${station.fuel_gasoline} zł ` : 'Brak '}
+                ${station.fuel_lpg ? `LPG: ${station.fuel_lpg} zł` : 'Brak '}
+            </p>
+            <p><strong>Ostatnia aktualizacja:</strong> ${new Date(station.last_updated).toLocaleString()}</p>
+        `;
+        stationList.appendChild(stationElement);
+    });
+}
+
 
     fetchStations();
 </script>
