@@ -9,8 +9,6 @@ const userStore = useUserStore()
 onMounted(() => {
   const urlParams = new URLSearchParams(window.location.search)
   const token = urlParams.get('token')
-  console.log(urlParams)
-  console.log(token)
 
   if (token) {
     try {
