@@ -9,5 +9,5 @@ module.exports = {
     JWT_SECRET: process.env.JWT_SECRET || '8a34!FDs9j@hFkz2qM#12K$',
     FACEBOOK_APP_ID: process.env.FACEBOOK_APP_ID || '1135556960905339',
     FACEBOOK_APP_SECRET: process.env.FACEBOOK_APP_SECRET || 'e1e98bd95786f04422a49885fa3dd877',
-    FACEBOOK_CALLBACK_URL: process.env.FACEBOOK_CALLBACK_URL || 'https://www.cenypaliwek.pl/auth/facebook/callback',
+    FACEBOOK_CALLBACK_URL: process.env.FACEBOOK_CALLBACK_URL || 'https://www.cenypaliwek.pl/api/auth/facebook/callback',
 };

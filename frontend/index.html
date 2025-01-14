@@ -22,7 +22,8 @@
         <button type="submit">Zaloguj się</button>
     </form>
 
-    <button onclick="window.location.href='/auth/facebook'">Zaloguj się przez Facebook</button>
+    <button onclick="window.location.href='/api/auth/facebook'">Zaloguj się przez Facebook</button>
+
 
     <script>
         const backendUrl = '/api';
@@ -31,9 +32,9 @@
             e.preventDefault();
             const email = document.getElementById('register-email').value;
             const password = document.getElementById('register-password').value;
-
+            
             try {
-                const response = await fetch(`${backendUrl}/register`, {
+                const response = await fetch(`${backendUrl}/auth/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password }),
@@ -47,28 +48,33 @@
         });
 
         document.getElementById('login-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
+    e.preventDefault();
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
 
-            try {
-                const response = await fetch(`${backendUrl}/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password }),
-                });
-                const data = await response.json();
-                if (response.ok) {
-                    localStorage.setItem('token', data.token);
-                    alert('Zalogowano pomyślnie!');
-                } else {
-                    alert(data.message || 'Nieprawidłowy email lub hasło.');
-                }
-            } catch (err) {
-                console.error(err);
-                alert('Wystąpił błąd podczas logowania.');
-            }
+    try {
+        const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
         });
+
+        const data = await response.json();
+        if (response.ok) {
+            localStorage.setItem('token', data.token);
+            alert('Zalogowano pomyślnie!');
+
+            if (data.redirectUrl) {
+                window.location.href = data.redirectUrl;
+            }
+        } else {
+            alert(data.error || 'Nieprawidłowy email lub hasło.');
+        }
+    } catch (err) {
+        console.error(err);
+        alert('Wystąpił błąd podczas logowania.');
+    }
+});
     </script>
 
     <h2>Panel Administratora</h2>
@@ -76,31 +82,38 @@
 
     <script>
         document.getElementById('admin-panel').addEventListener('click', async () => {
-            const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token');
 
-            if (!token) {
-                alert('Nie jesteś zalogowany!');
-                return;
-            }
+    if (!token) {
+        alert('Nie jesteś zalogowany!');
+        return;
+    }
 
-            try {
-                const response = await fetch('/api/admin', {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({ error: 'Nieznany błąd serwera.' }));
-                    throw new Error(errorData.error || 'Brak dostępu.');
-                }
-
-                const data = await response.json();
-                alert(data.message); 
-                window.location.href = '/admin-panel.html';
-            } catch (err) {
-                console.error('Błąd podczas sprawdzania dostępu:', err.message);
-                alert(err.message || 'Wystąpił błąd podczas sprawdzania dostępu.');
-            }
+    try {
+        const response = await fetch('/api/admin/panel', {
+            headers: { Authorization: `Bearer ${token}` },
         });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ error: 'Nieznany błąd serwera.' }));
+            throw new Error(errorData.error || 'Brak dostępu.');
+        }
+
+        const data = await response.json();
+        alert(data.message); 
+
+        // Przekierowanie do panelu admina
+        if (data.redirectUrl) {
+            window.location.href = data.redirectUrl;
+        }
+    } catch (err) {
+        console.error('Błąd podczas sprawdzania dostępu:', err.message);
+        alert(err.message || 'Wystąpił błąd podczas sprawdzania dostępu.');
+    }
+});
+
+
+
 
         const urlParams = new URLSearchParams(window.location.search);
         const token = urlParams.get('token');
@@ -113,6 +126,43 @@
             alert('Zalogowano pomyślnie przez Facebook!');
         }
     </script>
+
+<h2>Panel Użytkownika</h2>
+<button id="user-dashboard">Sprawdź dostęp</button>
+
+<script>
+    document.getElementById('user-dashboard').addEventListener('click', async () => {
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            alert('Nie jesteś zalogowany!');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/user/dashboard', {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ error: 'Nieznany błąd serwera.' }));
+                throw new Error(errorData.error || 'Brak dostępu.');
+            }
+
+            const data = await response.json();
+            alert(data.message);
+
+            // Przekierowanie do panelu użytkownika
+            if (data.redirectUrl) {
+                window.location.href = data.redirectUrl;
+            }
+        } catch (err) {
+            console.error('Błąd podczas sprawdzania dostępu:', err.message);
+            alert(err.message || 'Wystąpił błąd podczas sprawdzania dostępu.');
+        }
+    });
+</script>
+
 
 <h2>Lista stacji benzynowych</h2>
 <div id="station-list"></div>
@@ -132,17 +182,22 @@
     const stationList = document.getElementById('station-list');
     stationList.innerHTML = ''; 
 
+    if (stations.length === 0) {
+        stationList.innerHTML = '<p class="error">Brak stacji do wyświetlenia.</p>';
+        return;
+    }
+
     stations.forEach(station => {
         const stationElement = document.createElement('div');
         stationElement.classList.add('station-item');
         stationElement.innerHTML = `
-            <h3>Stacja ${station.name}</h3>
+            <h3>${station.name}</h3>
             <p><strong>Marka:</strong> ${station.brand}</p>
             <p><strong>Adres:</strong> ${station.address}</p>
             <p><strong>Współrzędne:</strong> ${station.latitude}, ${station.longitude}</p>
             <p><strong>Ceny paliw:</strong> 
-                ${station.fuel_diesel ? `Diesel: ${station.fuel_diesel} zł ` : 'Brak '}
-                ${station.fuel_gasoline ? `Benzyna: ${station.fuel_gasoline} zł ` : 'Brak '}
+                ${station.fuel_diesel ? `Diesel: ${station.fuel_diesel} zł ` : 'Brak ' }
+                ${station.fuel_gasoline ? `Benzyna: ${station.fuel_gasoline} zł ` : 'Brak ' }
                 ${station.fuel_lpg ? `LPG: ${station.fuel_lpg} zł` : 'Brak '}
             </p>
             <p><strong>Ostatnia aktualizacja:</strong> ${new Date(station.last_updated).toLocaleString()}</p>
@@ -152,8 +207,47 @@
 }
 
 
+
     fetchStations();
 </script>
+
+<h2>Informacje o użytkowniku</h2>
+<p id="user-info">Sprawdzanie stanu sesji...</p>
+
+
+<script>
+    async function fetchCurrentUser() {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                document.getElementById('user-info').innerText = 'Nie jesteś zalogowany.';
+                return;
+            }
+
+            const response = await fetch('/api/auth/current', {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                document.getElementById('user-info').innerText = 'Nie jesteś zalogowany.';
+                return;
+            }
+
+            const { email, role } = await response.json();
+            document.getElementById('user-info').innerText = `Zalogowany jako: ${email} (Rola: ${role})`;
+        } catch (error) {
+            console.error('Błąd podczas pobierania danych użytkownika:', error);
+            document.getElementById('user-info').innerText = 'Wystąpił błąd podczas sprawdzania sesji.';
+        }
+    }
+
+    fetchCurrentUser();
+</script>
+
 
 <style>
     #station-list {

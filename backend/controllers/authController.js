@@ -49,10 +49,37 @@ exports.login = async (req, res) => {
         );
 
         console.log('Użytkownik zalogowany:', user.email);
-        res.status(200).json({ token });
+
+        res.status(200).json({
+            token,
+            redirectUrl: user.role === 'admin' ? '/admin-panel' : '/user-dashboard',
+        });
     } catch (error) {
         console.error('Błąd podczas logowania:', error.message);
         res.status(500).json({ error: 'Login failed!' });
     }
 };
+
+
+exports.facebookCallback = (req, res) => {
+    if (!req.user) {
+        return res.status(401).json({ error: 'Autoryzacja przez Facebook nie powiodła się.' });
+    }
+
+    try {
+        const token = jwt.sign(
+            { id: req.user.id, email: req.user.email, role: req.user.role },
+            config.JWT_SECRET,
+            { expiresIn: '1h' }
+        );
+
+        const redirectUrl = req.user.role === 'admin' ? '/admin-panel' : '/user-dashboard';
+
+        res.redirect(`${redirectUrl}?token=${token}`);
+    } catch (error) {
+        console.error('Błąd podczas przetwarzania callbacku Facebook:', error.message);
+        res.status(500).json({ error: 'Facebook authentication failed.' });
+    }
+};
+
 
