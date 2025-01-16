@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import http from '@/http'
-
 async function loginWithFacebook() {
-  window.location.href = import.meta.env.VITE_API_URL + '/auth/facebook'
+  window.location.href = import.meta.env.VITE_API_URL + '/api/auth/facebook'
 }
 </script>
 

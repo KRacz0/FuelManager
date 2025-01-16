@@ -14,7 +14,7 @@ function register() {
     return
   }
   const request = { email: email.value, password: password.value }
-  http.post('api/register', request).then((response) => {
+  http.post('/api/auth/register', request).then((response) => {
     router.push({ name: 'login' })
   })
 }

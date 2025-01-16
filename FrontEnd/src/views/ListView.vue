@@ -12,8 +12,12 @@ const stations = ref<any>(null)
 
 async function fetchFuelStations() {
   try {
-    const response = await http.get('api/stations')
+    const response = await http.get('/api/stations')
     stations.value = response.data
+    console.log(response.data)
+    if (!response.data.length) {
+      useToast().warning(`Brak stacji do wyświetlenia`)
+    }
   } catch (error) {
     console.error('Error fetching data:', error)
     useToast
@@ -30,6 +34,43 @@ async function fetchFuelStations() {
     >
       <!-- Logo -->
       <img
+        v-if="station.brand == 'ORLEN'"
+        src="@/assets/Orlen_logo.png"
+        alt="Logo"
+        class="w-20 h-20 object-contain mx-auto"
+      />
+      <img
+        v-else-if="station.brand == 'BP'"
+        src="@/assets/BP_logo.png"
+        alt="Logo"
+        class="w-20 h-20 object-contain mx-auto"
+      />
+      <img
+        v-else-if="station.brand == 'SHELL'"
+        src="@/assets/Shell_logo.png"
+        alt="Logo"
+        class="w-20 h-20 object-contain mx-auto"
+      />
+      <img
+        v-else-if="station.brand == 'LOTOS'"
+        src="@/assets/Lotos_logo.png"
+        alt="Logo"
+        class="w-20 h-20 object-contain mx-auto"
+      />
+      <img
+        v-else-if="station.brand == 'DP'"
+        src="@/assets/DP_logo.png"
+        alt="Logo"
+        class="w-20 h-20 object-contain mx-auto"
+      />
+      <img
+        v-else-if="station.brand == 'PIEPRZYK'"
+        src="@/assets/Pieprzyk_logo.png"
+        alt="Logo"
+        class="w-20 h-20 object-contain mx-auto"
+      />
+      <img
+        v-else
         src="@/assets/ceny_paliwek_logo.png"
         alt="Logo"
         class="w-20 h-20 object-contain mx-auto"
@@ -46,19 +87,23 @@ async function fetchFuelStations() {
 
       <div class="grid grid-rows-2 border-red-500 m-1">
         <!-- Paliwa i ceny -->
-        <div class="content-end grid grid-cols-[1fr,1fr,1fr,1fr] gap-2 text-gray-700">
-          <div class="font-semibold text-center text-green-700">PB95</div>
-          <div class="font-semibold text-center text-green-600">PB98</div>
+        <div class="content-end grid grid-cols-[1fr,1fr,1fr] gap-2 text-gray-700">
+          <!-- <div class="font-semibold text-center text-green-700">PB95</div> -->
+          <!-- <div class="font-semibold text-center text-green-600">PB98</div> -->
+          <div class="font-semibold text-center text-green-600">PB</div>
           <div class="font-semibold text-center">ON</div>
           <div class="font-semibold text-center text-blue-500">LPG</div>
         </div>
 
-        <div class="content-start grid grid-cols-[1fr,1fr,1fr,1fr] gap-2 text-gray-700">
-          <div class="font-semibold text-center">
+        <div class="content-start grid grid-cols-[1fr,1fr,1fr] gap-2 text-gray-700">
+          <!-- <div class="font-semibold text-center">
             {{ station.fuel_gasoline_95 ?? '-' }}
-          </div>
-          <div class="font-semibold text-center">
+          </div> -->
+          <!-- <div class="font-semibold text-center">
             {{ station.fuel_gasoline_98 ?? '-' }}
+          </div> -->
+          <div class="font-semibold text-center">
+            {{ station.fuel_gasoline ?? '-' }}
           </div>
           <div class="font-semibold text-center">
             {{ station.fuel_diesel ?? '-' }}

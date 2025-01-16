@@ -18,7 +18,7 @@ function login() {
     return
   }
   const request = { email: email.value, password: password.value }
-  http.post('api/login', request).then((response) => {
+  http.post('api/auth/login', request).then((response) => {
     userStore.setUser(response.data.token)
     useToast().default(`Zalogowano`)
     router.push({ name: 'home' })

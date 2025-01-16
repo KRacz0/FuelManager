@@ -10,6 +10,7 @@ import AccessDeniedView from '@/views/AccessDeniedView.vue'
 import MapView from '@/views/MapView.vue'
 import ListView from '@/views/ListView.vue'
 import UpdateStationView from '@/views/UpdateStationView.vue'
+import FuelProposalView from '@/views/FuelProposalView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -36,6 +37,12 @@ const router = createRouter({
       path: '/list',
       name: 'list',
       component: ListView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/fuel-proposal',
+      name: 'fuel-proposal',
+      component: FuelProposalView,
       meta: { requiresAuth: true },
     },
     {
