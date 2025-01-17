@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import DateDisplay from '@/components/DateDisplay.vue'
+import FuelProposalModal from '@/components/FuelProposalModal.vue'
 import http from '@/http'
 import { onMounted, ref } from 'vue'
 import { useToast } from 'vue-toast-notification'
@@ -9,6 +10,8 @@ onMounted(() => {
 })
 
 const stations = ref<any>(null)
+const modalStation = ref<any>(null)
+const isFuelProposalModalVisible = ref(false)
 
 async function fetchFuelStations() {
   try {
@@ -23,6 +26,33 @@ async function fetchFuelStations() {
     useToast
   }
 }
+
+function getBrandImage(brand: any) {
+  if (brand == 'ORLEN') {
+    return 'Orlen_logo.png'
+  }
+  if (brand == 'BP') {
+    return 'BP_logo.png'
+  }
+  if (brand == 'SHELL') {
+    return 'Shell_logo.png'
+  }
+  if (brand == 'LOTOS') {
+    return 'Lotos_logo.png'
+  }
+  if (brand == 'DP') {
+    return 'DP_logo.png'
+  }
+  if (brand == 'PIEPRZYK') {
+    return 'Pieprzyk_logo.png'
+  }
+  return 'ceny_paliwek_logo.png'
+}
+
+function showFuelProposalModal(station: any) {
+  isFuelProposalModalVisible.value = true
+  modalStation.value = station
+}
 </script>
 
 <template>
@@ -30,48 +60,11 @@ async function fetchFuelStations() {
     <div
       v-for="station in stations"
       :key="station.id"
-      class="grid grid-cols-[auto,1fr,1fr] p-4 border border-gray-300 rounded-lg shadow-sm"
+      class="grid grid-cols-[auto,1fr,1fr,1fr] p-4 border border-gray-300 rounded-lg shadow-sm"
     >
       <!-- Logo -->
       <img
-        v-if="station.brand == 'ORLEN'"
-        src="@/assets/Orlen_logo.png"
-        alt="Logo"
-        class="w-20 h-20 object-contain mx-auto"
-      />
-      <img
-        v-else-if="station.brand == 'BP'"
-        src="@/assets/BP_logo.png"
-        alt="Logo"
-        class="w-20 h-20 object-contain mx-auto"
-      />
-      <img
-        v-else-if="station.brand == 'SHELL'"
-        src="@/assets/Shell_logo.png"
-        alt="Logo"
-        class="w-20 h-20 object-contain mx-auto"
-      />
-      <img
-        v-else-if="station.brand == 'LOTOS'"
-        src="@/assets/Lotos_logo.png"
-        alt="Logo"
-        class="w-20 h-20 object-contain mx-auto"
-      />
-      <img
-        v-else-if="station.brand == 'DP'"
-        src="@/assets/DP_logo.png"
-        alt="Logo"
-        class="w-20 h-20 object-contain mx-auto"
-      />
-      <img
-        v-else-if="station.brand == 'PIEPRZYK'"
-        src="@/assets/Pieprzyk_logo.png"
-        alt="Logo"
-        class="w-20 h-20 object-contain mx-auto"
-      />
-      <img
-        v-else
-        src="@/assets/ceny_paliwek_logo.png"
+        :src="`/src/assets/${getBrandImage(station.brand)}`"
         alt="Logo"
         class="w-20 h-20 object-contain mx-auto"
       />
@@ -113,6 +106,14 @@ async function fetchFuelStations() {
           </div>
         </div>
       </div>
+      <button @click="showFuelProposalModal(station)" class="object-contain mx-auto">
+        Zmień ceny paliw
+      </button>
     </div>
   </div>
+  <FuelProposalModal
+    :station="modalStation"
+    :isVisible="isFuelProposalModalVisible"
+    @close="isFuelProposalModalVisible = false"
+  />
 </template>

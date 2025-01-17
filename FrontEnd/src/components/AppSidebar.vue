@@ -15,14 +15,6 @@
           >Lista stacji paliw</RouterLink
         >
       </li>
-      <li>
-        <RouterLink
-          to="/update-station"
-          href="#"
-          class="block px-6 py-3 text-gray-700 hover:bg-gray-200"
-          >Dodaj stację paliw</RouterLink
-        >
-      </li>
     </ul>
   </div>
 </template>
