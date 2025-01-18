@@ -26,7 +26,8 @@ const userStore = useUserStore()
       <RouterLink to="/map">Map&nbsp;</RouterLink>
       <RouterLink to="/list">List&nbsp;</RouterLink>
       <RouterLink to="/fuel-proposal">FuelProposal&nbsp;</RouterLink>
-      <RouterLink to="/admin">Admin&nbsp;</RouterLink>
+      <RouterLink to="/add-station">AddStation&nbsp;</RouterLink>
+      <RouterLink to="/manage-proposals">ManageProposals&nbsp;</RouterLink>
     </div>
   </div>
 </template>
