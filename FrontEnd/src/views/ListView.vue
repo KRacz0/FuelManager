@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import DateDisplay from '@/components/DateDisplay.vue'
 import FuelProposalModal from '@/components/FuelProposalModal.vue'
+import ListViewFilters from '@/components/ListViewFilters.vue'
 import http from '@/http'
+import type Station from '@/models/Station'
 import { onMounted, ref } from 'vue'
 import { useToast } from 'vue-toast-notification'
 
@@ -9,15 +11,16 @@ onMounted(() => {
   fetchFuelStations()
 })
 
-const stations = ref<any>(null)
-const modalStation = ref<any>(null)
+const filteredStations = ref<Station[]>([])
+const allStations = ref<Station[]>([])
+const modalStation = ref<Station | null>(null)
 const isFuelProposalModalVisible = ref(false)
 
 async function fetchFuelStations() {
   try {
     const response = await http.get('/api/stations')
-    stations.value = response.data
-    console.log(response.data)
+    allStations.value = response.data
+    clearFilters()
     if (!response.data.length) {
       useToast().warning(`Brak stacji do wyświetlenia`)
     }
@@ -27,7 +30,7 @@ async function fetchFuelStations() {
   }
 }
 
-function getBrandImage(brand: any) {
+function getBrandImage(brand: string) {
   if (brand == 'ORLEN') {
     return 'Orlen_logo.png'
   }
@@ -49,16 +52,25 @@ function getBrandImage(brand: any) {
   return 'ceny_paliwek_logo.png'
 }
 
-function showFuelProposalModal(station: any) {
+function showFuelProposalModal(station: Station) {
   isFuelProposalModalVisible.value = true
   modalStation.value = station
+}
+
+function clearFilters() {
+  filteredStations.value = allStations.value
+}
+
+function applyFilters(stations: Station[]) {
+  filteredStations.value = stations
 }
 </script>
 
 <template>
+  <ListViewFilters :stations="allStations" @filter="applyFilters" />
   <div class="grid grid-cols-1 gap-2 pr-16">
     <div
-      v-for="station in stations"
+      v-for="station in filteredStations"
       :key="station.id"
       class="grid grid-cols-[auto,1fr,1fr,1fr] p-4 border border-gray-300 rounded-lg shadow-sm"
     >
@@ -106,7 +118,10 @@ function showFuelProposalModal(station: any) {
           </div>
         </div>
       </div>
-      <button @click="showFuelProposalModal(station)" class="object-contain mx-auto">
+      <button
+        @click="showFuelProposalModal(station)"
+        class="object-contain mx-auto inline w-50 px-1 py-1 my-8 bg-primary text-white font-semibold rounded-lg hover:bg-green-600 transition duration-200"
+      >
         Zmień ceny paliw
       </button>
     </div>

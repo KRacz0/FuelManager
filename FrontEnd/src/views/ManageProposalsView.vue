@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import http from '@/http'
 import type FuelProposal from '@/models/FuelProposal'
+import DateDisplay from '@/components/DateDisplay.vue'
 
 const proposals = ref<FuelProposal[]>([])
 const loading = ref(true)
@@ -14,7 +15,6 @@ async function loadProposals() {
   try {
     const response = await http.get('/api/stations/proposals?status=pending')
     proposals.value = response.data
-    console.log(response)
   } catch (error) {
     console.error('Błąd pobierania danych:', error)
   } finally {
@@ -22,11 +22,23 @@ async function loadProposals() {
   }
 }
 
-async function updateProposalStatus(fuelProposal: FuelProposal, status: String) {
+async function updateProposalStatus(fuelProposal: FuelProposal, status: string) {
   const request = { status: status }
   const response = await http.patch(`/api/stations/proposals/${fuelProposal.id}/status`, request)
   if (response.statusText == 'OK') {
     await loadProposals()
+  }
+}
+
+function getFuelType(fuel_type: string) {
+  if (fuel_type == 'fuel_gasoline') {
+    return 'PB'
+  }
+  if (fuel_type == 'fuel_diesel') {
+    return 'ON'
+  }
+  if (fuel_type == 'fuel_lpg') {
+    return 'LPG'
   }
 }
 
@@ -49,6 +61,7 @@ async function updateProposalStatus(fuelProposal: FuelProposal, status: String) 
         <tr>
           <th class="px-4 py-2 text-sm font-semibold text-gray-600">ID</th>
           <th class="px-4 py-2 text-sm font-semibold text-gray-600">ID stacji</th>
+          <th class="px-4 py-2 text-sm font-semibold text-gray-600">Nazwa stacji</th>
           <th class="px-4 py-2 text-sm font-semibold text-gray-600">Rodzaj paliwa</th>
           <th class="px-4 py-2 text-sm font-semibold text-gray-600">Nowa cena</th>
           <th class="px-4 py-2 text-sm font-semibold text-gray-600">ID użytkownika</th>
@@ -62,11 +75,14 @@ async function updateProposalStatus(fuelProposal: FuelProposal, status: String) 
         <tr v-for="proposal in proposals" :key="proposal.id" class="border-b">
           <td class="px-4 py-2 text-sm text-gray-600">{{ proposal.id }}</td>
           <td class="px-4 py-2 text-sm text-gray-600">{{ proposal.station_id }}</td>
-          <td class="px-4 py-2 text-sm text-gray-600">{{ proposal.fuel_type }}</td>
-          <td class="px-4 py-2 text-sm text-gray-600">{{ proposal.new_price }}</td>
+          <td class="px-4 py-2 text-sm text-gray-600">{{ proposal.stationName }}</td>
+          <td class="px-4 py-2 text-sm text-gray-600">{{ getFuelType(proposal.fuelType) }}</td>
+          <td class="px-4 py-2 text-sm text-gray-600">{{ proposal.newPrice }}</td>
           <td class="px-4 py-2 text-sm text-gray-600">{{ proposal.user_id }}</td>
           <td class="px-4 py-2 text-sm text-gray-600">{{ proposal.status }}</td>
-          <td class="px-4 py-2 text-sm text-gray-600">{{ proposal.created_at }}</td>
+          <DateDisplay :dateString="proposal.created_at" class="px-4 py-2 text-sm text-gray-600">{{
+            proposal.created_at
+          }}</DateDisplay>
           <td class="px-4 py-2 text-sm text-gray-600">
             <button
               @click="updateProposalStatus(proposal, 'approved')"

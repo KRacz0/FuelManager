@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import ModalBase from '@/components/ModalBase.vue'
 import http from '@/http'
+import type Station from '@/models/Station'
 import { ref } from 'vue'
 import { useToast } from 'vue-toast-notification'
 
 const props = defineProps<{
   isVisible: boolean
-  station: any
+  station: Station | null
 }>()
 
 const file = ref<File | null>(null)
@@ -26,17 +27,16 @@ const fileUploaded = (event: Event) => {
   }
 }
 
-function sendProposal(fuelType: String, newPrice: number) {
+function sendProposal(fuelType: string, newPrice: number) {
   if (!file.value) {
     useToast().warning('Nie wybrano pliku')
     return
   }
   const formData = new FormData()
-  formData.append('stationId', props.station.id)
+  formData.append('stationId', props.station!.id.toString())
   formData.append('fuelType', fuelType.toString())
   formData.append('newPrice', newPrice.toString())
   formData.append('image', file.value)
-  console.log(formData)
   http.post('api/stations/propose-change', formData, {
     headers: {
       'Content-Type': 'multipart/form-data', // Optional, usually set automatically
@@ -54,10 +54,10 @@ function sendProposal(fuelType: String, newPrice: number) {
       <div class="mb-6">
         <!-- <h2 class="text-lg font-semibold text-gray-800">Informacje o stacji</h2> -->
         <p class="text-gray-600">
-          Nazwa stacji: <span class="font-medium text-blue-600">{{ station.name }}</span>
+          Nazwa stacji: <span class="font-medium text-blue-600">{{ station!.name }}</span>
         </p>
         <p class="text-gray-600">
-          Lokalizacja: <span class="font-medium text-blue-600">{{ station.address }}</span>
+          Lokalizacja: <span class="font-medium text-blue-600">{{ station!.address }}</span>
         </p>
       </div>
 
@@ -68,14 +68,14 @@ function sendProposal(fuelType: String, newPrice: number) {
           <input
             id="fuel_gasoline"
             type="number"
-            v-model="station.fuel_gasoline"
+            v-model="station!.fuel_gasoline"
             class="mt-1 inline w-50 px-1 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             placeholder="Wprowadź cenę za PB"
             required
             step="0.01"
           />
           <button
-            @click="sendProposal('fuel_gasoline', station.fuel_gasoline)"
+            @click="sendProposal('fuel_gasoline', station!.fuel_gasoline)"
             class="inline w-50 ml-10 px-1 py-1 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition duration-200"
           >
             Zaktualizuj cenę
@@ -89,14 +89,14 @@ function sendProposal(fuelType: String, newPrice: number) {
           <input
             id="fuel_diesel"
             type="number"
-            v-model="station.fuel_diesel"
+            v-model="station!.fuel_diesel"
             class="mt-1 inline w-50 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             placeholder="Wprowadź cenę za Diesel"
             required
             step="0.01"
           />
           <button
-            @click="sendProposal('fuel_diesel', station.fuel_diesel)"
+            @click="sendProposal('fuel_diesel', station!.fuel_diesel)"
             class="inline w-50 ml-10 px-1 py-1 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition duration-200"
           >
             Zaktualizuj cenę
@@ -108,14 +108,14 @@ function sendProposal(fuelType: String, newPrice: number) {
           <input
             id="fuel_lpg"
             type="number"
-            v-model="station.fuel_lpg"
+            v-model="station!.fuel_lpg"
             class="mt-1 inline w-50 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             placeholder="Wprowadź cenę za LPG"
             required
             step="0.01"
           />
           <button
-            @click="sendProposal('fuel_lpg', station.fuel_lpg)"
+            @click="sendProposal('fuel_lpg', station!.fuel_lpg)"
             class="inline w-50 ml-10 px-1 py-1 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition duration-200"
           >
             Zaktualizuj cenę

@@ -1,10 +1,11 @@
 export default interface FuelProposal {
   id: number
   station_id: number
-  fuel_type: String
-  new_price: number
+  stationName: string
+  fuelType: string
+  newPrice: number
   user_id: number
-  created_at: Date
-  status: String
-  image_path: String
+  created_at: string
+  status: string
+  image_path: string
 }

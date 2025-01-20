@@ -1,9 +1,7 @@
 <script setup lang="ts">
-//dzień, miesiąc, rok, godzina, minuta
 const props = defineProps<{
   dateString: string
 }>()
-// const date = new Date('2025-01-03T08:03:05.000Z')
 const date = new Date(props.dateString)
 
 const hours = CleanUp(date.getHours())
