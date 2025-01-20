@@ -8,7 +8,6 @@ exports.register = async (req, res) => {
 
     try {
         const rows = await db.query('SELECT * FROM users WHERE email = ?', [email]);
-        console.log('Query result:', rows);
 
         if (rows.length > 0) {
             return res.status(400).json({ error: 'Email is already registered!' });
@@ -18,10 +17,8 @@ exports.register = async (req, res) => {
 
         await db.query('INSERT INTO users (email, password) VALUES (?, ?)', [email, hashedPassword]);
 
-        console.log(`User registered successfully: ${email}`);
         res.status(201).json({ message: 'User registered successfully!' });
     } catch (error) {
-        console.error('Error during registration:', error.message);
         res.status(500).json({ error: 'Registration failed!' });
     }
 };
@@ -34,12 +31,16 @@ exports.login = async (req, res) => {
         const user = users[0];
 
         if (!user) {
-            return res.status(401).json({ error: 'Invalid email or password!' });
+            return res.status(401).json({ error: 'Niepoprawny email lub hasło!' });
+        }
+
+        if (user.is_banned) {
+            return res.status(403).json({ error: 'Twoje konto zostało zbanowane. Nie możesz się zalogować.' });
         }
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
-            return res.status(401).json({ error: 'Invalid email or password!' });
+            return res.status(401).json({ error: 'Niepoprawny email lub hasło!' });
         }
 
         const token = jwt.sign(
@@ -61,25 +62,36 @@ exports.login = async (req, res) => {
 };
 
 
-exports.facebookCallback = (req, res) => {
+exports.facebookCallback = async (req, res) => {
     if (!req.user) {
         return res.status(401).json({ error: 'Autoryzacja przez Facebook nie powiodła się.' });
     }
 
     try {
+        const [users] = await db.execute('SELECT * FROM users WHERE id = ?', [req.user.id]);
+        const user = users[0];
+
+        if (!user) {
+            return res.status(401).json({ error: 'Użytkownik nie istnieje.' });
+        }
+
+        if (user.is_banned) {
+            return res.status(403).json({ error: 'Twoje konto zostało zbanowane. Nie możesz się zalogować.' });
+        }
+
         const token = jwt.sign(
-            { id: req.user.id, email: req.user.email, role: req.user.role },
+            { id: user.id, email: user.email, role: user.role },
             config.JWT_SECRET,
             { expiresIn: '1h' }
         );
 
-        const redirectUrl = req.user.role === 'admin' ? '/admin-panel' : '/user-dashboard';
+        const redirectUrl = user.role === 'admin' ? '/admin-panel' : '/user-dashboard';
 
         res.redirect(`${redirectUrl}?token=${token}`);
     } catch (error) {
-        console.error('Błąd podczas przetwarzania callbacku Facebook:', error.message);
         res.status(500).json({ error: 'Facebook authentication failed.' });
     }
 };
+
 
 

@@ -22,7 +22,7 @@ const upload = multer({
             cb(new Error('Nieobsługiwany format pliku. Dozwolone: JPEG, PNG.'));
         }
     },
-    limits: { fileSize: 5 * 1024 * 1024 } // 5 MB limit
+    limits: { fileSize: 5 * 1024 * 1024 }
 });
 
 module.exports = upload;

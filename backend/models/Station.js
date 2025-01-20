@@ -29,6 +29,28 @@ class Station {
         ];
         return await db.execute(query, values);
     }
+
+     static async update(id, stationData) {
+        const query = `
+            UPDATE fuel_stations 
+            SET name = ?, brand = ?, address = ?, latitude = ?, longitude = ?, 
+                fuel_diesel = ?, fuel_gasoline = ?, fuel_lpg = ?
+            WHERE id = ?
+        `;
+        const values = [
+            stationData.name,
+            stationData.brand,
+            stationData.address,
+            stationData.latitude,
+            stationData.longitude,
+            stationData.fuel_diesel || null,
+            stationData.fuel_gasoline || null,
+            stationData.fuel_lpg || null,
+            id
+        ];
+
+        return await db.execute(query, values);
+    }
 }
 
 module.exports = Station;

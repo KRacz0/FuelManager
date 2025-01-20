@@ -11,12 +11,14 @@ const userRoutes = require('./backend/routes/userRoutes');
 const pageRoutes = require('./backend/routes/pageRoutes');
 const stationRoutes = require('./backend/routes/stationRoutes');
 
+
 const app = express();
 const PORT = 3001;
 
 // Middleware
 app.use(cors({ origin: '*' }));
 app.use(express.json());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.static(path.join(__dirname, 'frontend'), {
     index: false,
     extensions: ['html'],

@@ -19,6 +19,9 @@ passport.use(
                 const [users] = await db.execute('SELECT * FROM users WHERE email = ?', [email]);
                 let user = users[0];
 
+                if (user && user.is_banned) {
+                    return done(null, false, { message: 'Twoje konto zostało zbanowane. Nie możesz się zalogować.' });
+                }
                 if (!user) {
                     const [result] = await db.execute(
                         'INSERT INTO users (email, name, role) VALUES (?, ?, ?)',
@@ -35,6 +38,7 @@ passport.use(
         }
     )
 );
+
 
 passport.serializeUser((user, done) => {
     done(null, user.id);

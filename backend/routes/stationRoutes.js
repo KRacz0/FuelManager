@@ -23,14 +23,6 @@ router.post(
     stationController.proposePriceChange
 );
 
-// Aktualizacja statusu propozycji (dla adminów)
-router.patch(
-    '/proposals/:id/status',
-    authMiddleware.authenticate,
-    authMiddleware.authorizeRole(['admin']),
-    stationController.updateProposalStatus
-);
-
 // Pobieranie wszystkich propozycji
 router.get(
     '/proposals',
@@ -39,20 +31,20 @@ router.get(
     stationController.getProposals
 );
 
+// Aktualizacja statusu propozycji (dla adminów)
+router.patch(
+    '/proposals/:proposalId/status',
+    authMiddleware.authenticate,
+    authMiddleware.authorizeRole(['admin']),
+    stationController.updateProposalStatus
+);
+
 // Pobieranie szczegółów propozycji
 router.get(
     '/proposals/:proposalId',
     authMiddleware.authenticate,
     authMiddleware.authorizeRole(['admin']),
     stationController.getProposalDetails
-);
-
-// Aktualizacja statusu propozycji
-router.patch(
-    '/proposals/:proposalId/status',
-    authMiddleware.authenticate,
-    authMiddleware.authorizeRole(['admin']),
-    stationController.updateProposalStatus
 );
 
 // Pobieranie statystyk propozycji

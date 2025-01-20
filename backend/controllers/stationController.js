@@ -1,5 +1,6 @@
 const Station = require('../models/Station');
 const FuelProposal = require('../models/FuelProposal');
+const User = require('../models/User');
 const upload = require('../middlewares/upload');
 const path = require('path');
 
@@ -72,41 +73,24 @@ exports.proposePriceChange = [
 
             res.status(201).json({ message: 'Propozycja zmiany cen została zgłoszona.' });
         } catch (error) {
-            console.error('Błąd podczas zgłaszania propozycji:', error.message);
             res.status(500).json({ error: 'Nie udało się zgłosić propozycji.' });
         }
     }
 ];
 
-
-// Obsługa zatwierdzania lub odrzucania propozycji zmiany cen paliw (tylko dla administratorów)
-exports.updateProposalStatus = async (req, res) => {
-    const { proposalId, status } = req.body;
-
-    if (!proposalId || !['pending', 'approved', 'rejected'].includes(status)) {
-        return res.status(400).json({ error: 'Nieprawidłowe dane wejściowe!' });
-    }
-
-    try {
-        await FuelProposal.updateProposalStatus(proposalId, status);
-        res.status(200).json({ message: `Status propozycji został zaktualizowany na ${status}.` });
-    } catch (error) {
-        console.error('Błąd podczas aktualizacji statusu propozycji:', error.message);
-        res.status(500).json({ error: 'Nie udało się zaktualizować statusu propozycji.' });
-    }
-};
-
 // Pobieranie wszystkich propozycji z opcjonalnym filtrem
 exports.getProposals = async (req, res) => {
     try {
-        const { status } = req.query; // Filtrowanie po statusie
+        const { status } = req.query;
         const proposals = await FuelProposal.getAll({ status });
+
         res.status(200).json(proposals);
     } catch (error) {
         console.error('Błąd podczas pobierania propozycji:', error.message);
         res.status(500).json({ error: 'Nie udało się pobrać propozycji.' });
     }
 };
+
 
 // Pobieranie szczegółów jednej propozycji
 exports.getProposalDetails = async (req, res) => {
@@ -128,22 +112,36 @@ exports.getProposalDetails = async (req, res) => {
 // Zmiana statusu propozycji
 exports.updateProposalStatus = async (req, res) => {
     try {
-        const { proposalId } = req.params;
+        const proposalId = parseInt(req.params.proposalId, 10);
         const { status } = req.body;
 
-        if (!['pending', 'approved', 'rejected'].includes(status)) {
+        if (!['approved', 'rejected'].includes(status)) {
             return res.status(400).json({ error: 'Nieprawidłowy status.' });
         }
 
-        await FuelProposal.updateStatus(proposalId, status);
-        res.status(200).json({ message: 'Status propozycji został zaktualizowany.' });
+        const proposal = await FuelProposal.getById(proposalId);
+        if (!proposal) {
+            console.error(`Propozycja o ID ${proposalId} nie istnieje w bazie!`);
+            return res.status(404).json({ error: 'Propozycja nie istnieje.' });
+        }
+
+        const success = await FuelProposal.updateProposalStatus(proposalId, status);
+        if (!success) {
+            return res.status(500).json({ error: 'Nie udało się zaktualizować propozycji.' });
+        }
+
+        if (status === 'approved') {
+            await User.addPoints(proposal.user_id, 10);
+        }
+
+        res.status(200).json({ message: `Propozycja została ${status === 'approved' ? 'zaakceptowana i cena paliwa została zaktualizowana' : 'odrzucona'}.` });
     } catch (error) {
         console.error('Błąd podczas aktualizacji statusu propozycji:', error.message);
         res.status(500).json({ error: 'Nie udało się zaktualizować statusu propozycji.' });
     }
 };
 
-// Statystyki propozycji
+// statystyki propozycji
 exports.getProposalStatistics = async (req, res) => {
     try {
         const stats = await FuelProposal.getStatistics();

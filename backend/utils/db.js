@@ -15,12 +15,16 @@ module.exports = {
     query: async (query, params) => {
         try {
             const [rows] = await pool.query(query, params);
+            if (!Array.isArray(rows)) {
+                console.error('Wynik zapytania SQL nie jest tablicą!', rows);
+                return [];
+            }
             return rows;
         } catch (error) {
             console.error('Błąd w query:', error.message);
             throw error;
         }
-    },    
+    },
     execute: async (query, params) => {
         try {
             const [result] = await pool.execute(query, params);
