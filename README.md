@@ -15,3 +15,5 @@ Projekt musi spełniać następujące wymagania funkcjonalne:
 * rejestracja powinna odbywać się klasycznie poprzez mejla oraz Facebooka
 * backend i frontend powinny być odseparowane i komunikacja powinna iść poprzez REST API
 * backend musi być udokumentowany w formie OpenAPI
+
+OpenAPI: https://www.cenypaliwek.pl/api-docs/#/
