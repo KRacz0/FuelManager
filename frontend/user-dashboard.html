@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Użytkownika</title>
+</head>
+<body>
+    <h1>PANEL UŻYTKOWNIKA</h1>
+
+    <h2>Informacje o użytkowniku</h2>
+    <p id="user-info">Sprawdzanie stanu sesji...</p>
+
+    <h2>Lista Stacji Paliw</h2>
+    <div id="station-list"></div>
+
+    <h2>Proponuj Zmianę Cen</h2>
+<form id="price-proposal-form" enctype="multipart/form-data">
+    <select id="station-select" name="stationId" required>
+        <option value="" disabled selected>Wybierz stację</option>
+    </select>
+    <select id="fuel-type-select" name="fuelType" required>
+        <option value="fuel_diesel">Diesel</option>
+        <option value="fuel_gasoline">Benzyna</option>
+        <option value="fuel_lpg">LPG</option>
+    </select>
+    <input type="number" step="0.01" id="new-price" name="newPrice" placeholder="Nowa cena (zł)" required>
+    <input type="file" id="image" name="image" accept="image/jpeg,image/png" required>
+    <button type="submit">Zaproponuj</button>
+</form>
+
+    <script>
+        const backendUrl = '/api';
+
+        // Pobieranie informacji o aktualnym użytkowniku
+        async function fetchCurrentUser() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    document.getElementById('user-info').innerText = 'Nie jesteś zalogowany.';
+                    return;
+                }
+
+                const response = await fetch('/api/auth/current', {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                if (!response.ok) {
+                    document.getElementById('user-info').innerText = 'Nie jesteś zalogowany.';
+                    return;
+                }
+
+                const { email, role } = await response.json();
+                document.getElementById('user-info').innerText = `Zalogowany jako: ${email} (Rola: ${role})`;
+            } catch (error) {
+                console.error('Błąd podczas pobierania danych użytkownika:', error);
+                document.getElementById('user-info').innerText = 'Wystąpił błąd podczas sprawdzania sesji.';
+            }
+        }
+
+        // Sprawdzanie dostępu
+        async function checkAccess() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/unauthorized.html';
+                return;
+            }
+
+            const response = await fetch('/api/auth/current', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            if (!response.ok) {
+                window.location.href = '/unauthorized.html';
+                return;
+            }
+
+            const { role } = await response.json();
+            if (role !== 'admin' && role !== 'user') {
+                window.location.href = '/unauthorized.html';
+            }
+        }
+
+        // Pobieranie stacji paliw
+        async function fetchStations() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    alert('Brak autoryzacji. Zaloguj się ponownie.');
+                    return;
+                }
+
+                const response = await fetch(`${backendUrl}/stations`, {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Cache-Control': 'no-cache',
+                        Pragma: 'no-cache'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Nie udało się pobrać danych o stacjach.');
+                }
+
+                const stations = await response.json();
+                renderStations(stations);
+                populateStationSelect(stations);
+            } catch (error) {
+                console.error('Błąd podczas ładowania stacji:', error.message);
+                document.getElementById('station-list').innerText = 'Błąd podczas ładowania stacji.';
+            }
+        }
+
+        // Renderowanie listy stacji
+        function renderStations(stations) {
+            const stationList = document.getElementById('station-list');
+            stationList.innerHTML = ''; 
+
+            if (!stations.length) {
+                stationList.innerHTML = '<p>Brak stacji do wyświetlenia.</p>';
+                return;
+            }
+
+            stations.forEach(station => {
+                const stationElement = document.createElement('div');
+                stationElement.classList.add('station');
+                stationElement.innerHTML = `
+                    <h3>${station.name}</h3>
+                    <p>Marka: ${station.brand}</p>
+                    <p>Adres: ${station.address}</p>
+                    <p>Szerokość geograficzna: ${station.latitude}</p>
+                    <p>Długość geograficzna: ${station.longitude}</p>
+                    <p>Diesel: ${station.fuel_diesel || 'Brak'} zł</p>
+                    <p>Benzyna: ${station.fuel_gasoline || 'Brak'} zł</p>
+                    <p>LPG: ${station.fuel_lpg || 'Brak'} zł</p>
+                `;
+                stationList.appendChild(stationElement);
+            });
+        }
+
+        // Wypełnianie selecta stacjami
+        function populateStationSelect(stations) {
+            const stationSelect = document.getElementById('station-select');
+            stationSelect.innerHTML = '<option value="" disabled selected>Wybierz stację</option>';
+
+            stations.forEach(station => {
+                const option = document.createElement('option');
+                option.value = station.id;
+                option.textContent = station.name;
+                stationSelect.appendChild(option);
+            });
+        }
+
+        // Obsługa formularza zmiany cen
+    document.getElementById('price-proposal-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+
+        try {
+            const response = await fetch(`${backendUrl}/stations/propose-change`, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+                body: formData,
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Nie udało się zgłosić propozycji.');
+            }
+
+            alert('Propozycja zgłoszona pomyślnie.');
+            e.target.reset();
+        } catch (error) {
+            console.error('Błąd podczas zgłaszania propozycji:', error.message);
+            alert(error.message);
+        }
+    });
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchCurrentUser();
+            checkAccess();
+            fetchStations();
+        });
+    </script>
+</body>
+</html>

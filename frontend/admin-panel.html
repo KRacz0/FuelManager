@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administratora</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input, button {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            max-width: 400px;
+        }
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #proposals-list div, #station-list div {
+            border: 1px solid #ddd;
+            background: #fff;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        #logout-button {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        #logout-button:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Panel Administratora</h1>
+    <button id="logout-button">Wyloguj się</button>
+
+    <section>
+        <h2>Dodaj nową stację paliw</h2>
+        <form id="add-station-form">
+            <input type="text" id="name" placeholder="Nazwa stacji" required>
+            <input type="text" id="brand" placeholder="Marka (np. ORLEN, BP)" required>
+            <input type="text" id="address" placeholder="Adres" required>
+            <input type="number" step="any" id="latitude" placeholder="Szerokość geograficzna" required>
+            <input type="number" step="any" id="longitude" placeholder="Długość geograficzna" required>
+            <input type="number" step="0.01" id="fuel_diesel" placeholder="Cena Diesla (zł/L)">
+            <input type="number" step="0.01" id="fuel_gasoline" placeholder="Cena Benzyny (zł/L)">
+            <input type="number" step="0.01" id="fuel_lpg" placeholder="Cena LPG (zł/L)">
+            <button type="submit">Dodaj stację</button>
+        </form>
+    </section>
+
+    <section>
+        <h2>Lista Stacji Paliw</h2>
+        <div id="station-list"></div>
+    </section>
+
+    <section>
+        <h2>Propozycje Cen Paliw</h2>
+        <div id="proposals-list"></div>
+    </section>
+
+    <script>
+        const backendUrl = '/api';
+
+        document.getElementById('logout-button').addEventListener('click', () => {
+            localStorage.removeItem('token');
+            window.location.href = '/';
+        });
+
+        // Dodawanie stacji
+        document.getElementById('add-station-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Nie jesteś zalogowany!');
+                window.location.href = '/';
+                return;
+            }
+
+            const station = {
+                name: document.getElementById('name').value,
+                brand: document.getElementById('brand').value,
+                address: document.getElementById('address').value,
+                latitude: parseFloat(document.getElementById('latitude').value),
+                longitude: parseFloat(document.getElementById('longitude').value),
+                fuel_diesel: parseFloat(document.getElementById('fuel_diesel').value) || null,
+                fuel_gasoline: parseFloat(document.getElementById('fuel_gasoline').value) || null,
+                fuel_lpg: parseFloat(document.getElementById('fuel_lpg').value) || null,
+            };
+
+            try {
+                const response = await fetch(`${backendUrl}/admin/add-station`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify(station),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Nie udało się dodać stacji.');
+                }
+
+                alert('Stacja została dodana pomyślnie.');
+                document.getElementById('add-station-form').reset();
+                fetchStations();
+            } catch (err) {
+                console.error('Błąd podczas dodawania stacji:', err.message);
+                alert(err.message);
+            }
+        });
+
+        // Pobieranie stacji paliw
+        async function fetchStations() {
+            try {
+                const response = await fetch(`${backendUrl}/stations`, {
+                    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+                });
+
+                if (!response.ok) throw new Error('Nie udało się pobrać danych o stacjach.');
+
+                const stations = await response.json();
+                renderStations(stations);
+            } catch (error) {
+                console.error('Błąd podczas ładowania stacji:', error.message);
+            }
+        }
+
+        // Renderowanie listy stacji
+        function renderStations(stations) {
+            const stationList = document.getElementById('station-list');
+            stationList.innerHTML = ''; 
+
+            if (!stations.length) {
+                stationList.innerHTML = '<p>Brak stacji do wyświetlenia.</p>';
+                return;
+            }
+
+            stations.forEach((station) => {
+                const stationElement = document.createElement('div');
+                stationElement.innerHTML = `
+                    <h3>${station.name}</h3>
+                    <p>Marka: ${station.brand}</p>
+                    <p>Adres: ${station.address}</p>
+                    <p>Szerokość geograficzna: ${station.latitude}</p>
+                    <p>Długość geograficzna: ${station.longitude}</p>
+                    <p>Diesel: ${station.fuel_diesel || 'Brak'} zł</p>
+                    <p>Benzyna: ${station.fuel_gasoline || 'Brak'} zł</p>
+                    <p>LPG: ${station.fuel_lpg || 'Brak'} zł</p>
+                `;
+                stationList.appendChild(stationElement);
+            });
+        }
+
+        async function init() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Nie jesteś zalogowany!');
+                window.location.href = '/unauthorized.html';
+                return;
+            }
+
+            await fetchStations();
+            await fetchProposals();
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+
+<script>
+
+    // Pobieranie propozycji cen paliw
+    async function fetchProposals() {
+        try {
+            const response = await fetch(`${backendUrl}/stations/proposals`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Nie udało się pobrać propozycji cen.');
+            }
+
+            const proposals = await response.json();
+            renderProposals(proposals);
+        } catch (error) {
+            console.error('Błąd podczas pobierania propozycji:', error.message);
+            document.getElementById('proposals-list').innerHTML = '<p>Nie udało się załadować propozycji cen.</p>';
+        }
+    }
+
+    // Renderowanie propozycji cen paliw
+    function renderProposals(proposals) {
+        const proposalsList = document.getElementById('proposals-list');
+        proposalsList.innerHTML = '';
+
+        if (!proposals.length) {
+            proposalsList.innerHTML = '<p>Brak propozycji do wyświetlenia.</p>';
+            return;
+        }
+
+        proposals.forEach((proposal) => {
+            const proposalElement = document.createElement('div');
+            proposalElement.classList.add('proposal');
+            proposalElement.innerHTML = `
+                <p><strong>ID:</strong> ${proposal.id}</p>
+                <p><strong>Stacja:</strong> ${proposal.stationName || 'Nieznana'}</p>
+                <p><strong>Typ paliwa:</strong> ${proposal.fuelType}</p>
+                <p><strong>Nowa cena:</strong> ${proposal.newPrice} zł</p>
+                <p><strong>Status:</strong> ${proposal.status}</p>
+                <button onclick="updateProposal(${proposal.id}, 'approved')">Akceptuj</button>
+                <button onclick="updateProposal(${proposal.id}, 'rejected')">Odrzuć</button>
+            `;
+            proposalsList.appendChild(proposalElement);
+        });
+    }
+
+    // Akceptowanie lub odrzucanie propozycji
+    async function updateProposal(proposalId, status) {
+        try {
+            const response = await fetch(`${backendUrl}/stations/proposals/${proposalId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+                body: JSON.stringify({ status }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Nie udało się zaktualizować propozycji.');
+            }
+
+            alert('Propozycja została zaktualizowana.');
+            fetchProposals(); // Odświeżenie listy propozycji
+        } catch (error) {
+            console.error('Błąd podczas aktualizowania propozycji:', error.message);
+        }
+    }
+
+    async function init() {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('Nie jesteś zalogowany!');
+            window.location.href = '/unauthorized.html';
+            return;
+        }
+
+        await fetchStations();
+        await fetchProposals();
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+</script>
+
+</body>
+</html>
