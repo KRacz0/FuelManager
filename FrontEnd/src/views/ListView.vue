@@ -93,20 +93,12 @@ function applyFilters(stations: Station[]) {
       <div class="grid grid-rows-2 border-red-500 m-1">
         <!-- Paliwa i ceny -->
         <div class="content-end grid grid-cols-[1fr,1fr,1fr] gap-2 text-gray-700">
-          <!-- <div class="font-semibold text-center text-green-700">PB95</div> -->
-          <!-- <div class="font-semibold text-center text-green-600">PB98</div> -->
           <div class="font-semibold text-center text-green-600">PB</div>
           <div class="font-semibold text-center">ON</div>
           <div class="font-semibold text-center text-blue-500">LPG</div>
         </div>
 
         <div class="content-start grid grid-cols-[1fr,1fr,1fr] gap-2 text-gray-700">
-          <!-- <div class="font-semibold text-center">
-            {{ station.fuel_gasoline_95 ?? '-' }}
-          </div> -->
-          <!-- <div class="font-semibold text-center">
-            {{ station.fuel_gasoline_98 ?? '-' }}
-          </div> -->
           <div class="font-semibold text-center">
             {{ station.fuel_gasoline ?? '-' }}
           </div>
