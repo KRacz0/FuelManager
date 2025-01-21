@@ -17,9 +17,9 @@ const fileUploaded = (event: Event) => {
 
   if (target && target.files) {
     const imageFile = target.files[0]
-    const validTypes = ['image/png', 'image/jpg', 'image/jpeg', 'image/bmp']
+    const validTypes = ['image/png', 'image/jpg', 'image/jpeg']
     if (!validTypes.includes(imageFile.type)) {
-      useToast().warning('Dozwolone rozszerzenia to .png, .jpg, .jpeg, .bmp')
+      useToast().warning('Dozwolone rozszerzenia to .png, .jpg, .jpeg')
       target.value = ''
       return
     }
@@ -27,7 +27,7 @@ const fileUploaded = (event: Event) => {
   }
 }
 
-function sendProposal(fuelType: string, newPrice: number) {
+function sendProposal(fuelType: string, newPrice: number | null) {
   if (!file.value) {
     useToast().warning('Nie wybrano pliku')
     return
@@ -35,11 +35,11 @@ function sendProposal(fuelType: string, newPrice: number) {
   const formData = new FormData()
   formData.append('stationId', props.station!.id.toString())
   formData.append('fuelType', fuelType.toString())
-  formData.append('newPrice', newPrice.toString())
+  formData.append('newPrice', newPrice?.toString() ?? '0')
   formData.append('image', file.value)
   http.post('api/stations/propose-change', formData, {
     headers: {
-      'Content-Type': 'multipart/form-data', // Optional, usually set automatically
+      'Content-Type': 'multipart/form-data',
     },
   })
 }

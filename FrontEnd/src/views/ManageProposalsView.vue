@@ -3,9 +3,14 @@ import { ref, onMounted } from 'vue'
 import http from '@/http'
 import type FuelProposal from '@/models/FuelProposal'
 import DateDisplay from '@/components/DateDisplay.vue'
+import type Station from '@/models/Station'
+import FuelProposalDetailsModal from '@/components/FuelProposalDetailsModal.vue'
 
 const proposals = ref<FuelProposal[]>([])
 const loading = ref(true)
+const modalProposal = ref<FuelProposal | null>(null)
+const isFuelProposalDetailsModalVisible = ref(false)
+const modalImageURL = ref<string | null>(null)
 
 onMounted(async () => {
   await loadProposals()
@@ -42,12 +47,19 @@ function getFuelType(fuel_type: string) {
   }
 }
 
-// async function showFuelProposalDetailsModal(fuelProposal: FuelProposal) {
-//   const response = await http.get(`/api/stations/proposals/${fuelProposal.id}`)
-//   console.log(response)
-// }
-//station_id
-//user_id
+async function showFuelProposalDetailsModal(proposal: FuelProposal) {
+  isFuelProposalDetailsModalVisible.value = true
+  modalProposal.value = proposal
+  try {
+    const response = await http.get<Blob>(`/uploads/${proposal?.image_path}`, {
+      responseType: 'blob',
+    })
+    const imageBlob = response.data
+    modalImageURL.value = URL.createObjectURL(imageBlob)
+  } catch {
+    modalImageURL.value = null
+  }
+}
 </script>
 
 <template>
@@ -59,50 +71,42 @@ function getFuelType(fuel_type: string) {
     <table v-else class="min-w-full table-auto border-collapse">
       <thead class="bg-gray-100">
         <tr>
-          <th class="px-4 py-2 text-sm font-semibold text-gray-600">ID</th>
-          <th class="px-4 py-2 text-sm font-semibold text-gray-600">ID stacji</th>
           <th class="px-4 py-2 text-sm font-semibold text-gray-600">Nazwa stacji</th>
           <th class="px-4 py-2 text-sm font-semibold text-gray-600">Rodzaj paliwa</th>
           <th class="px-4 py-2 text-sm font-semibold text-gray-600">Nowa cena</th>
           <th class="px-4 py-2 text-sm font-semibold text-gray-600">ID użytkownika</th>
-          <th class="px-4 py-2 text-sm font-semibold text-gray-600">Status</th>
           <th class="px-4 py-2 text-sm font-semibold text-gray-600">Data utworzenia</th>
-          <th class="px-4 py-2 text-sm font-semibold text-gray-600"></th>
           <th class="px-4 py-2 text-sm font-semibold text-gray-600"></th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="proposal in proposals" :key="proposal.id" class="border-b">
-          <td class="px-4 py-2 text-sm text-gray-600">{{ proposal.id }}</td>
-          <td class="px-4 py-2 text-sm text-gray-600">{{ proposal.station_id }}</td>
           <td class="px-4 py-2 text-sm text-gray-600">{{ proposal.stationName }}</td>
           <td class="px-4 py-2 text-sm text-gray-600">{{ getFuelType(proposal.fuelType) }}</td>
           <td class="px-4 py-2 text-sm text-gray-600">{{ proposal.newPrice }}</td>
           <td class="px-4 py-2 text-sm text-gray-600">{{ proposal.user_id }}</td>
-          <td class="px-4 py-2 text-sm text-gray-600">{{ proposal.status }}</td>
           <DateDisplay :dateString="proposal.created_at" class="px-4 py-2 text-sm text-gray-600">{{
             proposal.created_at
           }}</DateDisplay>
           <td class="px-4 py-2 text-sm text-gray-600">
             <button
-              @click="updateProposalStatus(proposal, 'approved')"
+              @click="showFuelProposalDetailsModal(proposal)"
               class="inline px-1 py-1 bg-primary text-white font-semibold rounded-lg hover:bg-green-600 transition duration-200"
             >
-              Zaakceptuj
-            </button>
-          </td>
-          <td class="px-4 py-2 text-sm text-gray-600">
-            <button
-              @click="updateProposalStatus(proposal, 'rejected')"
-              class="inline px-1 py-1 bg-red-700 text-white font-semibold rounded-lg hover:bg-red-600 transition duration-200"
-            >
-              Odrzuć
+              Szczegóły
             </button>
           </td>
         </tr>
       </tbody>
     </table>
   </div>
+  <FuelProposalDetailsModal
+    :proposal="modalProposal"
+    :isVisible="isFuelProposalDetailsModalVisible"
+    :imageURL="modalImageURL"
+    @close="isFuelProposalDetailsModalVisible = false"
+    @refresh="loadProposals()"
+  />
 </template>
 
 <!-- 
