@@ -3,7 +3,6 @@ import { ref, onMounted } from 'vue'
 import http from '@/http'
 import type FuelProposal from '@/models/FuelProposal'
 import DateDisplay from '@/components/DateDisplay.vue'
-import type Station from '@/models/Station'
 import FuelProposalDetailsModal from '@/components/FuelProposalDetailsModal.vue'
 
 const proposals = ref<FuelProposal[]>([])
@@ -27,13 +26,13 @@ async function loadProposals() {
   }
 }
 
-async function updateProposalStatus(fuelProposal: FuelProposal, status: string) {
-  const request = { status: status }
-  const response = await http.patch(`/api/stations/proposals/${fuelProposal.id}/status`, request)
-  if (response.statusText == 'OK') {
-    await loadProposals()
-  }
-}
+// async function updateProposalStatus(fuelProposal: FuelProposal, status: string) {
+//   const request = { status: status }
+//   const response = await http.patch(`/api/stations/proposals/${fuelProposal.id}/status`, request)
+//   if (response.statusText == 'OK') {
+//     await loadProposals()
+//   }
+// }
 
 function getFuelType(fuel_type: string) {
   if (fuel_type == 'fuel_gasoline') {

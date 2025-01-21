@@ -10,6 +10,7 @@ import MapView from '@/views/MapView.vue'
 import ListView from '@/views/ListView.vue'
 import AddStationView from '@/views/AddStationView.vue'
 import ManageProposalsView from '@/views/ManageProposalsView.vue'
+import ManageUsersView from '@/views/ManageUsersView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -60,6 +61,12 @@ const router = createRouter({
       path: '/manage-proposals',
       name: 'manage-proposals',
       component: ManageProposalsView,
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: '/manage-users',
+      name: 'manage-users',
+      component: ManageUsersView,
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {

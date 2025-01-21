@@ -39,6 +39,12 @@ const userStore = useUserStore()
           class="block px-6 py-3 text-gray-700 hover:bg-gray-200"
           >Zarządzaj propozycjami</RouterLink
         >
+        <RouterLink
+          to="/manage-users"
+          href="#"
+          class="block px-6 py-3 text-gray-700 hover:bg-gray-200"
+          >Zarządzaj użytkownikami</RouterLink
+        >
       </li>
     </ul>
   </div>
