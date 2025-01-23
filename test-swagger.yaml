@@ -1,0 +1,27 @@
+openapi: 3.0.0
+info:
+  title: Test API
+  description: Testowa dokumentacja API
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000/api
+    description: Serwer developerski
+  - url: https://www.cenypaliwek.pl/api
+    description: Serwer produkcyjny
+
+paths:
+  /test:
+    get:
+      summary: Testowy endpoint
+      description: Sprawdza, czy Swagger działa poprawnie
+      responses:
+        "200":
+          description: Udane żądanie
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Swagger działa poprawnie!"
