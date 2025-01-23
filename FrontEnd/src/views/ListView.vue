@@ -6,6 +6,7 @@ import http from '@/http'
 import type Station from '@/models/Station'
 import { onMounted, ref } from 'vue'
 import { useToast } from 'vue-toast-notification'
+import { getBrandImage } from '@/helpers'
 
 onMounted(() => {
   fetchFuelStations()
@@ -15,6 +16,7 @@ const filteredStations = ref<Station[]>([])
 const allStations = ref<Station[]>([])
 const modalStation = ref<Station | null>(null)
 const isFuelProposalModalVisible = ref(false)
+import orlenLogoImage from '@/assets/Orlen_Logo.png'
 
 async function fetchFuelStations() {
   try {
@@ -28,28 +30,6 @@ async function fetchFuelStations() {
     console.error('Error fetching data:', error)
     useToast
   }
-}
-
-function getBrandImage(brand: string) {
-  if (brand == 'ORLEN') {
-    return 'Orlen_logo.png'
-  }
-  if (brand == 'BP') {
-    return 'BP_logo.png'
-  }
-  if (brand == 'SHELL') {
-    return 'Shell_logo.png'
-  }
-  if (brand == 'LOTOS') {
-    return 'Lotos_logo.png'
-  }
-  if (brand == 'DP') {
-    return 'DP_logo.png'
-  }
-  if (brand == 'PIEPRZYK') {
-    return 'Pieprzyk_logo.png'
-  }
-  return 'ceny_paliwek_logo.png'
 }
 
 function showFuelProposalModal(station: Station) {
@@ -76,7 +56,7 @@ function applyFilters(stations: Station[]) {
     >
       <!-- Logo -->
       <img
-        :src="`/src/assets/${getBrandImage(station.brand)}`"
+        :src="getBrandImage(station.brand)"
         alt="Logo"
         class="w-20 h-20 object-contain mx-auto"
       />

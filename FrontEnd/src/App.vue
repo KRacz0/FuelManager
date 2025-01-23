@@ -18,7 +18,7 @@ const userStore = useUserStore()
   >
     <div class="mt-32"><RouterView /></div>
     <div class="fixed left-0 bottom-0">
-      <!-- do testowania -->
+      <!-- do testowania
       <RouterLink to="/">Welcome&nbsp;</RouterLink>
       <RouterLink to="/register">Register&nbsp;</RouterLink>
       <RouterLink to="/login">Login&nbsp;</RouterLink>
@@ -28,7 +28,7 @@ const userStore = useUserStore()
       <RouterLink to="/fuel-proposal">FuelProposal&nbsp;</RouterLink>
       <RouterLink to="/add-station">AddStation&nbsp;</RouterLink>
       <RouterLink to="/manage-proposals">ManageProposals&nbsp;</RouterLink>
-      <RouterLink to="/manage-users">ManageUsers&nbsp;</RouterLink>
+      <RouterLink to="/manage-users">ManageUsers&nbsp;</RouterLink> -->
     </div>
   </div>
 </template>

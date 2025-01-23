@@ -6,10 +6,13 @@ import { useToast } from 'vue-toast-notification'
 import DateDisplay from '@/components/DateDisplay.vue'
 import http from '@/http'
 import type Station from '@/models/Station'
+import { getBrandImage } from '@/helpers'
 
 let zoom = ref(13)
 let center = ref([51.2064, 16.1554]) // Współrzędne Legnicy
 const stations = ref<Station[]>([])
+const osmAttribution =
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
 
 onMounted(() => {
   fetchFuelStations()
@@ -27,47 +30,23 @@ async function fetchFuelStations() {
     useToast
   }
 }
-
-function getBrandImage(brand: string) {
-  if (brand == 'ORLEN') {
-    return 'Orlen_logo.png'
-  }
-  if (brand == 'BP') {
-    return 'BP_logo.png'
-  }
-  if (brand == 'SHELL') {
-    return 'Shell_logo.png'
-  }
-  if (brand == 'LOTOS') {
-    return 'Lotos_logo.png'
-  }
-  if (brand == 'DP') {
-    return 'DP_logo.png'
-  }
-  if (brand == 'PIEPRZYK') {
-    return 'Pieprzyk_logo.png'
-  }
-  return 'ceny_paliwek_logo.png'
-}
 </script>
 
 <template>
   <div id="map">
     <l-map ref="map" v-model:zoom="zoom" v-model:center="center" :useGlobalLeaflet="false">
       <l-tile-layer
-        url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png"
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        :attribution="osmAttribution"
         layer-type="base"
-        name="Stadia Maps Basemap"
-      ></l-tile-layer>
+        name="OpenStreetMap"
+      />
       <l-marker
         v-for="station in stations"
         :key="station.id"
         :lat-lng="[station.latitude, station.longitude]"
       >
-        <l-icon
-          class=""
-          :iconUrl="`/src/assets/${getBrandImage(station.brand)}`"
-          :iconSize="[64, 56]" />
+        <l-icon class="" :iconUrl="getBrandImage(station.brand)" :iconSize="[64, 56]" />
         <l-popup>
           <div>
             <div class="font-bold text-lg text-center">{{ station.name }}</div>
