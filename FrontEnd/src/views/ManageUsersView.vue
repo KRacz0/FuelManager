@@ -29,7 +29,6 @@ async function loadUsers() {
 
 async function banUser(user: User) {
   const response = await http.patch(`/api/admin/users/${user.id}/ban`)
-  console.log(response)
   if (response.statusText == 'OK') {
     await loadUsers()
   }
