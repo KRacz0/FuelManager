@@ -7,16 +7,19 @@ import type Station from '@/models/Station'
 import { onMounted, ref } from 'vue'
 import { useToast } from 'vue-toast-notification'
 import { getBrandImage } from '@/helpers'
+import { useUserStore } from '@/stores/userStore'
+import EditFuelStationModal from '@/components/EditFuelStationModal.vue'
 
 onMounted(() => {
   fetchFuelStations()
 })
 
+const userStore = useUserStore()
 const filteredStations = ref<Station[]>([])
 const allStations = ref<Station[]>([])
 const modalStation = ref<Station | null>(null)
 const isFuelProposalModalVisible = ref(false)
-import orlenLogoImage from '@/assets/Orlen_Logo.png'
+const isFuelStationEditModalVisible = ref(false)
 
 async function fetchFuelStations() {
   try {
@@ -34,7 +37,12 @@ async function fetchFuelStations() {
 
 function showFuelProposalModal(station: Station) {
   isFuelProposalModalVisible.value = true
-  modalStation.value = station
+  modalStation.value = {... station}
+}
+
+function showEditFuelStationModal(station: Station) {
+  isFuelStationEditModalVisible.value = true
+  modalStation.value = {... station}
 }
 
 function clearFilters() {
@@ -90,17 +98,32 @@ function applyFilters(stations: Station[]) {
           </div>
         </div>
       </div>
+      <div>
       <button
         @click="showFuelProposalModal(station)"
-        class="object-contain mx-auto inline w-50 px-1 py-1 my-8 bg-primary text-white font-semibold rounded-lg hover:bg-green-600 transition duration-200"
+        class="object-contain mx-auto inline w-50 px-1 py-1 mt-8 bg-primary text-white font-semibold rounded-lg hover:bg-green-600 transition duration-200"
       >
         Zmień ceny paliw
+      </button><br/>
+      <button
+      v-if="userStore.isAdmin"
+        @click="showEditFuelStationModal(station)"
+        class="object-contain mx-auto inline w-50 px-1 py-1 mb-8 mt-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition duration-200"
+      >
+        Edytuj stację paliw
       </button>
+      </div>
     </div>
   </div>
   <FuelProposalModal
+  :isVisible="isFuelProposalModalVisible"
     :station="modalStation"
-    :isVisible="isFuelProposalModalVisible"
     @close="isFuelProposalModalVisible = false"
+  />
+  <EditFuelStationModal
+  :isVisible="isFuelStationEditModalVisible"
+    :station="modalStation"
+    @close="isFuelStationEditModalVisible = false"
+    @refresh="fetchFuelStations"
   />
 </template>

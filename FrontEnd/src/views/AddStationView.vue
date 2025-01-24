@@ -72,12 +72,12 @@ function validate() {
           required
         >
           <option value="" disabled selected>Wybierz markę stacji</option>
-          <option value="Orlen">Orlen</option>
+          <option value="ORLEN">Orlen</option>
           <option value="BP">BP</option>
-          <option value="Shell">Shell</option>
-          <option value="Lotos">Lotos</option>
+          <option value="SHELL">Shell</option>
+          <option value="LOTOS">Lotos</option>
           <option value="DP">DP</option>
-          <option value="Pieprzyk">Pieprzyk</option>
+          <option value="PIEPRZYK">Pieprzyk</option>
         </select>
       </p>
       <p class="text-gray-600">
