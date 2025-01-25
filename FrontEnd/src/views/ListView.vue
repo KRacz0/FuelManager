@@ -99,18 +99,19 @@ function applyFilters(stations: Station[]) {
         </div>
       </div>
       <div>
+        <button
+        v-if="userStore.isAdmin"
+          @click="showEditFuelStationModal(station)"
+          class="object-contain mx-auto inline w-50 px-1 py-1 my-10 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition duration-200"
+        >
+          Edytuj stację paliw
+        </button>
       <button
+      v-else
         @click="showFuelProposalModal(station)"
-        class="object-contain mx-auto inline w-50 px-1 py-1 mt-8 bg-primary text-white font-semibold rounded-lg hover:bg-green-600 transition duration-200"
+        class="object-contain mx-auto inline w-50 px-1 py-1 my-10 bg-primary text-white font-semibold rounded-lg hover:bg-green-600 transition duration-200"
       >
         Zmień ceny paliw
-      </button><br/>
-      <button
-      v-if="userStore.isAdmin"
-        @click="showEditFuelStationModal(station)"
-        class="object-contain mx-auto inline w-50 px-1 py-1 mb-8 mt-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition duration-200"
-      >
-        Edytuj stację paliw
       </button>
       </div>
     </div>

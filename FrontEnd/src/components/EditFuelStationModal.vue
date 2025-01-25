@@ -62,7 +62,7 @@ function validate() {
 <template>
     <ModalBase @close="$emit('close')" :isVisible="isVisible">
         <div class="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-        <h1 class="text-2xl font-semibold text-center mb-6">Dodaj stację paliw</h1>
+        <h1 class="text-2xl font-semibold text-center mb-6">Edytuj stację paliw</h1>
 
         <div v-if="errorMessage" class="text-red-600 text-center mb-4">{{ errorMessage }}</div>
 
