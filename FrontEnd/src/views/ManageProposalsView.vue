@@ -107,13 +107,3 @@ async function showFuelProposalDetailsModal(proposal: FuelProposal) {
     @refresh="loadProposals()"
   />
 </template>
-
-<!-- 
-getProposals
-tabelka z:
-- id
-- typ paliwa
-- proponowana cena
-- status
--przycisk "szczegóły" -> otwiera modal w którym wyświetla getProposalDetails
--->

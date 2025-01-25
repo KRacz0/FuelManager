@@ -3,7 +3,6 @@ import type FuelProposal from '@/models/FuelProposal'
 import ModalBase from './ModalBase.vue'
 import DateDisplay from './DateDisplay.vue'
 import http from '@/http'
-import { onMounted } from 'vue'
 
 const emit = defineEmits(['refresh', 'close'])
 

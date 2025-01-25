@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import http from '@/http'
-// import type FuelProposal from '@/models/FuelProposal'
 import DateDisplay from '@/components/DateDisplay.vue'
-// import FuelProposalDetailsModal from '@/components/FuelProposalDetailsModal.vue'
 import type User from '@/models/User'
+import UserStatisticsModal from '@/components/UserStatisticsModal.vue'
+import type Statistics from '@/models/Statistics'
 
 const users = ref<User[]>([])
 const loading = ref(true)
-// const modalProposal = ref<FuelProposal | null>(null)
-// const isFuelProposalDetailsModalVisible = ref(false)
-// const modalImageURL = ref<string | null>(null)
+const modalUser = ref<User | null>(null)
+const modalStatistics = ref<Statistics | null>(null)
+const isUserStatisticsModalVisible = ref(false)
 
 onMounted(async () => {
   await loadUsers()
@@ -32,6 +32,13 @@ async function banUser(user: User) {
   if (response.statusText == 'OK') {
     await loadUsers()
   }
+}
+
+async function showUserStatisticsModal(user: User){
+  isUserStatisticsModalVisible.value = true
+  modalUser.value = user
+  const response = await http.get<Statistics>(`api/admin/users/${user!.id}/stats`)
+  modalStatistics.value = response.data
 }
 
 // function getFuelType(fuel_type: string) {
@@ -76,6 +83,7 @@ async function banUser(user: User) {
           <th class="px-4 py-2 text-sm font-semibold text-gray-600">Status</th>
           <th class="px-4 py-2 text-sm font-semibold text-gray-600">Data utworzenia użytkownika</th>
           <th class="px-4 py-2 text-sm font-semibold text-gray-600"></th>
+          <th class="px-4 py-2 text-sm font-semibold text-gray-600"></th>
         </tr>
       </thead>
       <tbody>
@@ -99,15 +107,23 @@ async function banUser(user: User) {
               Zbanuj użytkownika
             </button>
           </td>
+          <td class="px-4 py-2 text-sm text-gray-600">
+            <button
+            v-if="user.role != 'admin'"
+              @click="showUserStatisticsModal(user)"
+              class="inline px-1 py-1 bg-primary text-white font-semibold rounded-lg hover:bg-green-500 transition duration-200"
+            >
+              Statystyki
+            </button>
+          </td>
         </tr>
       </tbody>
     </table>
   </div>
-  <!-- <FuelProposalDetailsModal
-      :proposal="modalProposal"
-      :isVisible="isFuelProposalDetailsModalVisible"
-      :imageURL="modalImageURL"
-      @close="isFuelProposalDetailsModalVisible = false"
-      @refresh="loadProposals()"
-    /> -->
+  <UserStatisticsModal
+      :isVisible="isUserStatisticsModalVisible"
+      :user="modalUser"
+      :statistics="modalStatistics"
+      @close="isUserStatisticsModalVisible = false"
+    />
 </template>
