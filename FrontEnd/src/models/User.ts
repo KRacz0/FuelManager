@@ -5,4 +5,5 @@ export default interface User {
   role: string
   is_banned: number
   created_at: string
+  points: number
 }
