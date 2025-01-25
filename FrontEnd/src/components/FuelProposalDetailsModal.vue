@@ -37,7 +37,7 @@ async function updateProposalStatus(status: string) {
 
 <template>
   <ModalBase @close="$emit('close')" :isVisible="isVisible">
-    <div class="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+    <div class="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg max-h-[80vh] overflow-y-auto">
       <h1 class="text-2xl font-semibold text-center mb-6">Szczegóły</h1>
 
       <div class="space-y-4">
@@ -87,7 +87,7 @@ async function updateProposalStatus(status: string) {
             v-if="imageURL"
             :src="imageURL"
             alt="Pobrane zdjęcie"
-            class="object-cover rounded-md mx-auto"
+            class="object-scale-down object-contain h-[200px] w-[200px] rounded-md mx-auto"
           />
         </div>
 
