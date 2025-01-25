@@ -82,6 +82,7 @@ async function showUserStatisticsModal(user: User){
           <th class="px-4 py-2 text-sm font-semibold text-gray-600">Rola</th>
           <th class="px-4 py-2 text-sm font-semibold text-gray-600">Status</th>
           <th class="px-4 py-2 text-sm font-semibold text-gray-600">Data utworzenia użytkownika</th>
+          <!-- <th class="px-4 py-2 text-sm font-semibold text-gray-600">Punkty</th> -->
           <th class="px-4 py-2 text-sm font-semibold text-gray-600"></th>
           <th class="px-4 py-2 text-sm font-semibold text-gray-600"></th>
         </tr>
@@ -95,6 +96,7 @@ async function showUserStatisticsModal(user: User){
           <DateDisplay :dateString="user.created_at" class="px-4 py-2 text-sm text-gray-600">{{
             user.created_at
           }}</DateDisplay>
+          <!-- <td class="px-4 py-2 text-sm text-gray-600">{{ user.points ?? 0 }}</td> -->
           <td v-if="user.is_banned == 1" class="px-4 py-2 text-sm text-gray-600">
             Użytkownik został zbanowany
           </td>
