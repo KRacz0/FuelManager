@@ -4,6 +4,8 @@
 CenyPaliwek to aplikacja webowa umożliwiająca zarządzanie stacjami paliw, dodawanie propozycji cen przez użytkowników oraz ich moderację przez administratorów.  
 Aplikacja składa się z backendu napisanego w **Node.js** oraz frontendowej części stworzonej w **Vue.js**.
 
+🔗 [https://www.cenypaliwek.pl](https://www.cenypaliwek.pl)
+
 ---
 
 ## 📌 Stos technologiczny
