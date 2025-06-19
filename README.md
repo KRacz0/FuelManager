@@ -1,6 +1,6 @@
-# CenyPaliwek ⛽
+# CenyPaliwek 
 
-## 📌 Opis projektu
+##  Opis projektu
 CenyPaliwek to aplikacja webowa umożliwiająca zarządzanie stacjami paliw, dodawanie propozycji cen przez użytkowników oraz ich moderację przez administratorów.  
 Aplikacja składa się z backendu napisanego w **Node.js** oraz frontendowej części stworzonej w **Vue.js**.
 
@@ -8,7 +8,7 @@ Aplikacja składa się z backendu napisanego w **Node.js** oraz frontendowej cz�
 
 ---
 
-## 📌 Stos technologiczny
+##  Stos technologiczny
 
 ### **Backend**
 - **Node.js** – Serwer backendowy
@@ -28,7 +28,7 @@ Aplikacja składa się z backendu napisanego w **Node.js** oraz frontendowej cz�
 
 ---
 
-## 📁 Struktura katalogów
+##  Struktura katalogów
 
 ```
 /backend
@@ -59,44 +59,44 @@ Aplikacja składa się z backendu napisanego w **Node.js** oraz frontendowej cz�
 
 ---
 
-## 📌 Opis najważniejszych klas
+##  Opis najważniejszych klas
 
-### **1️. User Model (`models/User.js`)**
+### **1. User Model (`models/User.js`)**
 - Przechowuje dane użytkowników (email, hasło, rola, liczba punktów).
 - Obsługuje operacje CRUD na użytkownikach.
 - Sprawdza, czy użytkownik jest zbanowany.
 
-### **2️. Station Model (`models/Station.js`)**
+### **2. Station Model (`models/Station.js`)**
 - Reprezentuje stacje paliw w bazie danych.
 - Przechowuje nazwy, lokalizacje i ceny paliw.
 
-### **3️. Auth Controller (`controllers/authController.js`)**
+### **3. Auth Controller (`controllers/authController.js`)**
 - Obsługuje rejestrację i logowanie użytkowników.
 - Implementuje logowanie przez Facebook OAuth.
 
-### **4️. Station Controller (`controllers/stationController.js`)**
+### **4. Station Controller (`controllers/stationController.js`)**
 - Odpowiada za operacje CRUD na stacjach paliw.
 - Obsługuje propozycje zmian cen.
 
-### **5️. User Controller (`controllers/userController.js`)**
+### **5. User Controller (`controllers/userController.js`)**
 - Zarządza użytkownikami.
 - Obsługuje banowanie i pobieranie listy użytkowników.
 
-### **6️. Middleware (`middlewares/authMiddleware.js`)**
+### **6. Middleware (`middlewares/authMiddleware.js`)**
 - Sprawdza, czy użytkownik jest zalogowany.
 - Weryfikuje token JWT.
 - Ogranicza dostęp do endpointów tylko dla administratorów.
 
   ---
 
-## 📌 Instalacja i uruchomienie (lokalnie)
+##  Instalacja i uruchomienie (lokalnie)
 
 ###  Wymagania
 - **Node.js v18+**
 - **MySQL**
 - **NPM v10.8.2+**
 
-### **1️. Konfiguracja Backend**
+### **1. Konfiguracja Backend**
 
 1. **Zainstaluj zależności**
    ```bash
@@ -122,7 +122,7 @@ Aplikacja składa się z backendu napisanego w **Node.js** oraz frontendowej cz�
    npm start
    ```
 
-### **2️. Konfiguracja Frontend**
+### **2. Konfiguracja Frontend**
 
  **Zainstaluj zależności**
    ```bash
@@ -136,32 +136,32 @@ Aplikacja powinna być dostępna pod `http://localhost:3001/`
 
 ---
 
-## 📌 Instalacja i wdrożenie na serwer
+##  Instalacja i wdrożenie na serwer
 
 Aplikacja jest wdrożona na maszynie wirtualnej, gdzie zostały wykonane następujące kroki:
 
-### **1️. Konfiguracja serwera**
+### **1. Konfiguracja serwera**
 - Instalacja Node.js oraz PM2
 - Ustawienie certyfikatu SSL i HTTPS
 - Konfiguracja domeny i DNS
 
-### **2️. Klonowanie projektu**
+### **2. Klonowanie projektu**
    ```bash
    git clone https://github.com/KRacz0/FuelManage
    cd /var/www/cenypaliwek
    ```
 
-### **3️. Instalacja zależności i konfiguracja**
+### **3. Instalacja zależności i konfiguracja**
    ```bash
    cd /var/www/cenypaliwek/backend
    npm install
    cp .env  # Wypełnij plik .env odpowiednimi wartościami
    ```
 
-### **4️. Uruchomienie bazy danych**
+### **4. Uruchomienie bazy danych**
    *Tabele w bazie danych są tworzone automatycznie przy pierwszym uruchomieniu serwera.*
 
-### **5️. Uruchomienie aplikacji na serwerze**
+### **5. Uruchomienie aplikacji na serwerze**
    ```bash
    pm2 start app.js --name cenypaliwek
    pm2 save
@@ -169,14 +169,14 @@ Aplikacja jest wdrożona na maszynie wirtualnej, gdzie zostały wykonane następ
    ```
 ---
 
-## 🌎 Dokumentacja API
+##  Dokumentacja API
 
 Po uruchomieniu backendu dokumentacja API jest dostępna pod adresem:
 🔗 [https://www.cenypaliwek.pl/api-docs/](https://www.cenypaliwek.pl/api-docs/)
 
 ---
 
-## 👨‍🎨 Grupa Projektowa
+##  Grupa Projektowa
 
 - Krystian Raczyński **- Lider, Project Manager, Devops, Programista backend**
 - Gerard Hagel **- Programista frontend**
